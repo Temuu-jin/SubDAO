@@ -1,12 +1,13 @@
 CREATE TABLE users(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   username varchar NOT NULL UNIQUE,
+  password_hash varchar NOT NULL,
   email varchar NOT NULL UNIQUE,
   created_at timestamp DEFAULT NOW()
-  bio text NOT NULL,
+  /* bio text NOT NULL,
   post_count integer NOT NULL DEFAULT 0,
   comment_count integer NOT NULL DEFAULT 0,
-  daos
+  daos integer[] NOT NULL DEFAULT '{}' */
 );
 
 CREATE TABLE posts(
@@ -38,7 +39,7 @@ CREATE TABLE daos (
 SQL Commands:
   // Add col to table
   ALTER TABLE users
-  ADD COLUMN username varchar NOT NULL UNIQUE;
+  ADD COLUMN password_hash varchar NOT NULL;
 
   // Delete col from table
   ALTER TABLE users
