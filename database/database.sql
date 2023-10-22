@@ -1,6 +1,6 @@
 CREATE TABLE users(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  username varchar NOT NULL UNIQUE,
+  username varchar() NOT NULL UNIQUE,
   password_hash varchar NOT NULL,
   email varchar NOT NULL UNIQUE,
   created_at timestamp DEFAULT NOW()
@@ -47,7 +47,7 @@ SQL Commands:
 
   // Delete a user and associated data
   DELETE FROM users
-  WHERE email = 'user@example.com';
+  WHERE email = 'example@example.com';
 
   // Delete posts and comments associated with the user
   DELETE FROM posts
@@ -57,5 +57,5 @@ SQL Commands:
   WHERE user_id = (SELECT id FROM users WHERE email = 'user@example.com');
 
   // Create sample user
-  INSERT INTO users (email, created_at)
-  VALUES ('example@example.com', NOW());
+  INSERT INTO users (username, email, password_hash, created_at)
+  VALUES ('example', 'example@example.com', 'example', NOW());
