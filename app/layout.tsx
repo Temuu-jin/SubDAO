@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
+import { ApolloClientProvider } from './ApolloClientProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
           </div>
           <div className="flex ">Profile</div>
         </nav>
-        {children}
+        <ApolloClientProvider>{children}</ApolloClientProvider>
       </body>
     </html>
   );
