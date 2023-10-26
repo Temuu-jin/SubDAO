@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
 export function getParsedCookie() {
-  const cartCookieString = cookies().get('sessionToken')?.value;
-  console.log('cartCookieString', cartCookieString);
-  return cartCookieString ? cartCookieString : [];
+  const sessionToken = cookies().get('sessionToken')?.value;
+  console.log('sessionToken', sessionToken);
+  return sessionToken ? sessionToken : [];
 }

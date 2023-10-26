@@ -1,8 +1,4 @@
-import { gql } from '@apollo/client';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import Image from 'next/image';
-import Link from 'next/link';
-import { getClient } from '../../util/apolloClient';
 import { getParsedCookie } from '../../util/cookies';
 
 export type UserResponse = {

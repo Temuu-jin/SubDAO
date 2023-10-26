@@ -1,10 +1,9 @@
 import './globals.css';
-import jwt from 'jsonwebtoken';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import { getParsedCookie } from '../util/cookies';
+import { checkLogin } from '../util/auth';
 import { ApolloClientProvider } from './ApolloClientProvider';
 import Signout from './Signout.js';
 
@@ -20,26 +19,21 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const userDataRaw = await getParsedCookie();
-  console.log('userDataRaw: ', userDataRaw);
-  const userData =
-    typeof userDataRaw === 'string'
-      ? ((await jwt.decode(userDataRaw)) as string)
-      : null;
-  console.log('userData: ', userData);
+  const token = await cookies().get('sessionToken');
+  const loggedIn = await checkLogin(token);
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <nav className="w-full bg-gray-300 flex flex-row z-10 justify-around h-10 items-center">
           <div className="flex ">Logo</div>
-          <div className="flex flex-row gap-20">
+          <div className="flex flex-row gap-14">
             <Link href="/">Feed</Link>
             <Link href="/">DAOs</Link>
             <Link href="/">About Us</Link>
           </div>
-          {!userData ? (
-            <div className="flex flex-row gap-20">
+          {loggedIn === false ? (
+            <div className="flex flex-row gap-14">
               <Link href={{ pathname: '/login' }} passHref>
                 Login
               </Link>
@@ -48,11 +42,17 @@ export default async function RootLayout({
               </Link>
             </div>
           ) : (
-            <div className="flex ">
-              <Link href={{ pathname: '/profile' }} passHref>
+            <div className="flex flex-row justify-around">
+              <Link
+                href={{ pathname: '/profile' }}
+                className="flex flex-row gap-20"
+                passHref
+              >
                 My Profile
               </Link>
-              <Signout />
+              <div className="ml-10">
+                <Signout />
+              </div>
             </div>
           )}
         </nav>

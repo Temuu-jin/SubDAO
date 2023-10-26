@@ -1,8 +1,7 @@
 'use client';
 import '../../globals.css';
 import { gql, useMutation } from '@apollo/client';
-import { redirect, useRouter } from 'next/navigation';
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const loginUser = gql`
@@ -34,7 +33,6 @@ export default function SignupForm() {
       return onError;
     },
     onCompleted: async () => {
-      await router.push('/profile');
       await router.refresh();
     },
   });
