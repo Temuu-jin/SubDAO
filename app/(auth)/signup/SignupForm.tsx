@@ -1,11 +1,12 @@
 'use client';
 import '../../globals.css';
 import { gql, useMutation } from '@apollo/client';
+import { redirect, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const createUserMutation = gql`
   mutation CreateUser($email: String!, $username: String!, $password: String!) {
-    createUser(email: $email, username: $username, password: $password) {
+    registerUser(email: $email, username: $username, password: $password) {
       id
       email
       username
@@ -18,6 +19,7 @@ export default function SignupForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [onError, setOnError] = useState('');
+  const router = useRouter();
 
   const [createUser] = useMutation(createUserMutation, {
     variables: {
@@ -27,19 +29,23 @@ export default function SignupForm() {
     },
     onError: (error) => {
       setOnError(error.message);
+      console.log('failed');
       return onError;
     },
-    onCompleted: () => {
-      setOnError('');
-      setEmail('');
-      setUsername('');
-      setPassword('');
+    onCompleted: async () => {
+      await router.push('/login');
     },
   });
 
   return (
     <div className="card flex-shrink-1 h-[10%] w-full max-w-sm shadow-2xl bg-base-100">
-      <form onSubmit={async () => await createUser()} className="card-body">
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault(); // Prevent the default form submission
+          await createUser();
+        }}
+        className="card-body"
+      >
         <div className="form-control">
           <label htmlFor="email" className="label">
             <span className="label-text">E-Mail</span>

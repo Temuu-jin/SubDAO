@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { createPost, deletePost, getPosts } from '../../../database/posts';
 import {
   createUser,
   deleteUser,
@@ -16,6 +17,7 @@ import {
 } from '../../../database/users';
 import { CreateUserArgs, LoginResponse, User } from '../../../util/types';
 
+// typeDefs
 const typeDefs = gql`
   scalar DateTime
 
@@ -33,7 +35,6 @@ const typeDefs = gql`
   }
 
   type LoginResponse {
-    token: String!
     user: User!
   }
 
@@ -78,10 +79,10 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createUser(email: String!, username: String!, password: String!): User!
+    registerUser(email: String!, username: String!, password: String!): User!
     deleteUser(id: ID!): User!
-    login(username: String!, password: String!): LoginResponse!
-    createPost(title: String!, body: String!): Post!
+    loginUser(username: String!, password: String!): LoginResponse!
+    createPost(title: String!, body: String!, userId: ID!): Post!
     updatePost(id: ID!, title: String!, body: String!): Post!
     deletePost(id: ID!): Post!
     createComment(body: String!, postId: ID!): Comment!
@@ -93,6 +94,7 @@ const typeDefs = gql`
   }
 `;
 
+// resolvers
 const resolvers = {
   Query: {
     users: async () => {
@@ -101,10 +103,13 @@ const resolvers = {
     user: async (parent: null, args: { id: string }) => {
       return await getUserById(parseInt(args.id));
     },
+    posts: async () => {
+      return await getPosts();
+    },
   },
 
   Mutation: {
-    createUser: async (parent: null, args: CreateUserArgs) => {
+    registerUser: async (parent: null, args: CreateUserArgs) => {
       if (
         typeof args.username !== 'string' ||
         typeof args.email !== 'string' ||
@@ -115,14 +120,17 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
+      // const passwordHash: string = await bcrypt.hash(args.password, 10);
+      console.log(args);
       const passwordHash: string = await bcrypt.hash(args.password, 10);
+      console.log('passwordHash Register: ', passwordHash);
       return await createUser(args.username, passwordHash, args.email);
     },
     deleteUser: async (parent: null, args: { id: number }) => {
       const user = await deleteUser(args.id);
       return user;
     },
-    login: async (
+    loginUser: async (
       parent: null,
       args: { username: string; password: string },
     ) => {
@@ -134,43 +142,77 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
-      const user: User | undefined = await getUserByUsername(args.username);
-      /*  const userNoHash = {
-        id: user?.id,
-        username: user?.username,
-        email: user?.email,
-        createdAt: user?.createdAt,
-      }; */
+      const passwordHash: string = await bcrypt.hash(args.password, 10);
+      console.log('passwordHash login: ', passwordHash);
+      const auth: boolean = await bcrypt.compare(args.password, passwordHash);
+      if (!auth) {
+        throw new GraphQLError('Invalid username or password');
+      }
+      const user = await getUserByUsername(args.username);
       if (!user) {
-        throw new GraphQLError('User not found');
+        throw new GraphQLError('No user found');
       }
-      const passwordMatch = await bcrypt.compare(
-        args.password,
-        user.passwordHash,
+      const payload = {
+        userId: user.id,
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+      };
+      const options = {
+        expiresIn: '1h',
+      };
+      const sessionToken = await jwt.sign(
+        payload,
+        process.env.JWT_SECRET!,
+        options,
       );
-      if (!passwordMatch) {
-        throw new GraphQLError('Password incorrect');
+      cookies().set('sessionToken', sessionToken);
+      return { user } as LoginResponse;
+    },
+    createPost: async (
+      parent: null,
+      args: { title: string; body: string; userId: number },
+    ) => {
+      if (
+        !args.body ||
+        !args.title ||
+        typeof args.body !== 'string' ||
+        typeof args.title !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
       }
-      if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined');
-      }
-      const token = await jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
-      cookies().set('sessionToken', token);
-
-      return { user, token: token };
+      return await createPost(args.title, args.body, args.userId);
+    },
+    deletePost: async (parent: null, args: { id: number }) => {
+      const post = await deletePost(args.id);
+      return post;
     },
   },
 };
+
+// schema
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+// apollo server
 const apolloServer = new ApolloServer({ schema });
 
+// next handler
 const handler = startServerAndCreateNextHandler(apolloServer);
 
 export async function GET(req: NextRequest): Promise<any> {
-  return await handler(req);
+  try {
+    return await handler(req);
+  } catch (error) {
+    console.error('Error handling GET request:', error);
+    throw error; // or return a formatted error response
+  }
 }
 
-export async function POST(req: NextRequest): Promise<any> {
-  return await handler(req);
+export async function POST(req: NextRequest, res: NextResponse): Promise<any> {
+  try {
+    return await handler(req);
+  } catch (error) {
+    console.error('Error handling POST request:', error);
+    throw error; // or return a formatted error response
+  }
 }

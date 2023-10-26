@@ -4,6 +4,7 @@ import { sql } from './connect';
 
 export const getUsers = cache(async () => {
   const users = await sql<User[]>`SELECT * FROM users`;
+  console.log('users: ', users);
   return users;
 });
 
@@ -16,6 +17,7 @@ export const getUserByUsername = cache(async (username: string) => {
   const [user] = await sql<
     User[]
   >`SELECT * FROM users WHERE username = ${username}`;
+  console.log('user: ', user);
   return user;
 });
 
