@@ -121,9 +121,7 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       // const passwordHash: string = await bcrypt.hash(args.password, 10);
-      console.log(args);
       const passwordHash: string = await bcrypt.hash(args.password, 10);
-      console.log('passwordHash Register: ', passwordHash);
       return await createUser(args.username, passwordHash, args.email);
     },
     deleteUser: async (parent: null, args: { id: number }) => {
@@ -143,7 +141,6 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       const passwordHash: string = await bcrypt.hash(args.password, 10);
-      console.log('passwordHash login: ', passwordHash);
       const auth: boolean = await bcrypt.compare(args.password, passwordHash);
       if (!auth) {
         throw new GraphQLError('Invalid username or password');
@@ -201,6 +198,7 @@ const handler = startServerAndCreateNextHandler(apolloServer);
 
 export async function GET(req: NextRequest): Promise<any> {
   try {
+    console.log('im in get');
     return await handler(req);
   } catch (error) {
     console.error('Error handling GET request:', error);
@@ -210,6 +208,8 @@ export async function GET(req: NextRequest): Promise<any> {
 
 export async function POST(req: NextRequest, res: NextResponse): Promise<any> {
   try {
+    console.log('im in post');
+
     return await handler(req);
   } catch (error) {
     console.error('Error handling POST request:', error);

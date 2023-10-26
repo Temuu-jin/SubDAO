@@ -29,7 +29,6 @@ export default function SignupForm() {
     },
     onError: (error) => {
       setOnError(error.message);
-      console.log('failed');
       return onError;
     },
     onCompleted: async () => {

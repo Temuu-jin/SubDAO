@@ -4,7 +4,6 @@ import { sql } from './connect';
 
 export const getPosts = cache(async () => {
   const posts = await sql<Post[]>`SELECT * FROM posts`;
-  console.log('posts: ', posts);
   return posts;
 });
 
@@ -17,7 +16,6 @@ export const getPostByUserid = cache(async (userId: number) => {
   const [post] = await sql<
     Post[]
   >`SELECT * FROM posts WHERE userId = ${userId}`;
-  console.log('post: ', post);
   return post;
 });
 

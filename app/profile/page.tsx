@@ -29,7 +29,6 @@ export default async function Profile() {
   // const data = await getUserById();
   const dataString: string = await getParsedCookie().toString();
   const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
-  console.log('data page.tsx:', user);
   return (
     <div className="flex flex-col items-center my-40">
       <h1>You are logged in as:</h1>
