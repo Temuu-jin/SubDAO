@@ -12,7 +12,7 @@ export const getDaoById = cache(async (id: number) => {
   return dao;
 });
 
-export const getDaoByUserid = cache(async (userId: number) => {
+export const getDaoByUserId = cache(async (userId: number) => {
   const [dao] = await sql<
     Dao[]
   >`SELECT * FROM daos WHERE created_by = ${userId}`;

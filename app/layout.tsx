@@ -20,7 +20,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const token = await cookies().get('sessionToken');
-  const loggedIn = await checkLogin(token);
+  const loggedIn = await checkLogin();
 
   return (
     <html lang="en">
@@ -40,7 +40,12 @@ export default async function RootLayout({
               </>
             ) : (
               <>
-                <Link href="/profile">Profile</Link>
+                <Link
+                  href="/profile"
+                  className=" text-white my-1 px-1.5 rounded-md block"
+                >
+                  Profile
+                </Link>
                 <Signout />
               </>
             )}

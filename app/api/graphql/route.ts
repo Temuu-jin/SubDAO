@@ -29,6 +29,7 @@ import {
   getUserByUsername,
   getUsers,
 } from '../../../database/users';
+import { createSessionToken } from '../../../util/auth';
 import { LoginResponse } from '../../../util/types';
 
 // typeDefs
@@ -78,7 +79,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     description: String!
-    createdBy: ID!
+    userId: String!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -200,21 +201,8 @@ const resolvers = {
       if (!user) {
         throw new GraphQLError('No user found');
       }
-      const payload = {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt,
-      };
-      const options = {
-        expiresIn: '1h',
-      };
-      const sessionToken = await jwt.sign(
-        payload,
-        process.env.JWT_SECRET!,
-        options,
-      );
-      cookies().set('sessionToken', sessionToken);
+      const sessionToken = await createSessionToken(user);
+      cookies().set('sessionToken', sessionToken.toString());
       return { user } as LoginResponse;
     },
     createPost: async (

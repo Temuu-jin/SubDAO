@@ -1,5 +1,5 @@
 'use client';
-import '../../globals.css';
+import '../globals.css';
 import { gql, useMutation } from '@apollo/client';
 import { redirect, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -37,67 +37,65 @@ export default function SignupForm() {
   });
 
   return (
-    <div className="card flex-shrink-1 h-[10%] w-full max-w-sm shadow-2xl bg-base-100">
+    <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
       <form
         onSubmit={async (e) => {
-          e.preventDefault(); // Prevent the default form submission
+          e.preventDefault();
           await createUser();
         }}
-        className="card-body"
       >
-        <div className="form-control">
-          <label htmlFor="email" className="label">
-            <span className="label-text">E-Mail</span>
+        <div className="mb-4">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            name="username"
+            onChange={(event) => setUsername(event.currentTarget.value)}
+            placeholder="Username"
+            className="mt-1 p-2 w-full border rounded-md"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
           </label>
           <input
             type="email"
             name="email"
-            placeholder="email"
-            className="input input-bordered"
             onChange={(event) => setEmail(event.currentTarget.value)}
+            placeholder="Email"
+            className="mt-1 p-2 w-full border rounded-md"
             required
           />
         </div>
-        <div className="form-control">
-          <label htmlFor="username" className="label">
-            <span className="label-text">username</span>
-          </label>
-          <input
-            type="username"
-            name="username"
-            onChange={(event) => setUsername(event.currentTarget.value)}
-            placeholder="username"
-            className="input input-bordered"
-            required
-          />
-        </div>
-        <div className="form-control">
-          <label htmlFor="password" className="label">
-            <span className="label-text">Password</span>
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
           </label>
           <input
             type="password"
             name="password"
             onChange={(event) => setPassword(event.currentTarget.value)}
-            placeholder="password"
-            className="input input-bordered"
+            placeholder="Password"
+            className="mt-1 p-2 w-full border rounded-md"
             required
           />
         </div>
-        <div className="form-control">
-          <label htmlFor="confirm password" className="label">
-            <span className="label-text">Confirm Password</span>
-          </label>
-          <input
-            type="password"
-            name="confirm password"
-            placeholder="confirm password"
-            className="input input-bordered"
-            required
-          />
-        </div>
-        <div className="form-control mt-6">
-          <button className="btn btn-primary">Sign up</button>
+        <div className="mt-6">
+          <button className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
+            Sign up
+          </button>
         </div>
       </form>
     </div>

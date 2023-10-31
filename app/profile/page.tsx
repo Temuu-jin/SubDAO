@@ -30,19 +30,21 @@ export default async function Profile() {
   const dataString: string = await getParsedCookie().toString();
   const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
   return (
-    <div className="flex flex-col items-center my-40">
-      <h1>You are logged in as:</h1>
-      {user === null ? (
-        <div>no user</div>
-      ) : (
-        <div className="my-5">
-          <div key={`animal-div-${user.userId}`}>
-            <div>username: {user.username}</div>
-            <div>email: {user.email}</div>
-            <div>member since: {user.createdAt}</div>
+    <main className="bg-gray-100 min-h-screen p-4">
+      <div className="container mx-auto bg-white rounded shadow p-4">
+        <h1>You are logged in as:</h1>
+        {user === null ? (
+          <div>no user</div>
+        ) : (
+          <div className="my-5">
+            <div key={`animal-div-${user.userId}`}>
+              <div>username: {user.username}</div>
+              <div>email: {user.email}</div>
+              <div>member since: {user.createdAt}</div>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </main>
   );
 }
