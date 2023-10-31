@@ -7,8 +7,21 @@ import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { createComment } from '../../../database/comments';
-import { createPost, deletePost, getPosts } from '../../../database/posts';
+import {
+  createComment,
+  getComments,
+  getCommentsByPostId,
+  getCommentsByUserId,
+} from '../../../database/comments';
+import { createDao, deleteDao, getDaos } from '../../../database/daos';
+import {
+  createPost,
+  createPostInDao,
+  deletePost,
+  getPostByDaoId,
+  getPostByUserId,
+  getPosts,
+} from '../../../database/posts';
 import {
   createUser,
   deleteUser,
@@ -28,11 +41,10 @@ const typeDefs = gql`
     passwordHash: String!
     email: String!
     createdAt: DateTime!
-    # Uncomment the fields below if you need them
-    # bio: String!
-    # postCount: Int!
-    # commentCount: Int!
-    # daos: [Int!]
+    bio: String!
+    postCount: Int!
+    commentCount: Int!
+    daos: [Int!]
   }
 
   type LoginResponse {
@@ -44,7 +56,8 @@ const typeDefs = gql`
     title: String!
     body: String!
     userId: ID!
-    user: User!
+    daoId: ID
+    user: User
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -53,10 +66,10 @@ const typeDefs = gql`
     id: ID!
     body: String!
     userId: ID!
-    user: User!
+    user: User
     postId: ID!
-    commentRef: ID!
-    post: Post!
+    commentRef: ID
+    post: Post
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -65,6 +78,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     description: String!
+    createdBy: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -91,12 +105,18 @@ const typeDefs = gql`
     createPost(title: String!, body: String!, userId: ID!): Post!
     updatePost(id: ID!, title: String!, body: String!): Post!
     deletePost(id: ID!): Post!
-    createComment(body: String!, postId: ID!): Comment!
+    createComment(body: String!, postId: ID!, userId: ID!): Comment!
     updateComment(id: ID!, body: String!): Comment!
     deleteComment(id: ID!): Comment!
-    createDao(name: String!, description: String!): Dao!
+    createDao(name: String!, description: String!, userId: String!): Dao!
     updateDao(id: ID!, name: String!, description: String!): Dao!
     deleteDao(id: ID!): Dao!
+    createPostInDao(
+      title: String!
+      body: String!
+      userId: ID!
+      daoId: ID!
+    ): Post!
   }
 `;
 
@@ -112,10 +132,28 @@ const resolvers = {
     posts: async () => {
       return await getPosts();
     },
-    postsByUser: async (parent: null, args: { userId: string }) => {},
-    commentsByPost: async (parent: null, args: { postId: string }) => {},
-    commentsByUser: async (parent: null, args: { userId: string }) => {},
-    postsByDao: async (parent: null, args: { daoId: string }) => {},
+    daos: async () => {
+      return await getDaos();
+    },
+    comments: async () => {
+      return await getComments();
+    },
+    postsByUser: async (parent: null, args: { userId: string }) => {
+      const userId = parseInt(args.userId);
+      return await getPostByUserId(userId);
+    },
+    commentsByPost: async (parent: null, args: { postId: string }) => {
+      const postId = parseInt(args.postId);
+      return await getCommentsByPostId(postId);
+    },
+    commentsByUser: async (parent: null, args: { userId: string }) => {
+      const userId = parseInt(args.userId);
+      return await getCommentsByUserId(userId);
+    },
+    postsByDao: async (parent: null, args: { daoId: string }) => {
+      const daoId = parseInt(args.daoId);
+      return await getPostByDaoId(daoId);
+    },
   },
 
   Mutation: {
@@ -190,6 +228,22 @@ const resolvers = {
       }
       return await createPost(args.title, args.body, args.userId);
     },
+    createPostInDao: async (
+      parent: null,
+      args: { title: string; body: string; userId: string; daoId: string },
+    ) => {
+      if (
+        !args.body ||
+        !args.title ||
+        typeof args.body !== 'string' ||
+        typeof args.title !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+      const userId = parseInt(args.userId);
+      const daoId = parseInt(args.daoId);
+      return await createPostInDao(args.title, args.body, userId, daoId);
+    },
     deletePost: async (parent: null, args: { id: number }) => {
       const post = await deletePost(args.id);
       return post;
@@ -209,7 +263,7 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       const userId = parseInt(args.userId);
-      return await createPost(args.name, args.description, userId);
+      return await createDao(args.name, args.description, userId);
     },
     createComment: async (
       parent: null,
@@ -228,6 +282,10 @@ const resolvers = {
       const userId = parseInt(args.userId);
       const postId = parseInt(args.postId);
       return await createComment(args.body, postId, userId);
+    },
+    deleteDao: async (parent: null, args: { id: number }) => {
+      const dao = await deleteDao(args.id);
+      return dao;
     },
   },
 };

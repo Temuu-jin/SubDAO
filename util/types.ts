@@ -35,6 +35,7 @@ export type Dao = {
   name: string;
   description: string;
   createdBy: number;
+  daoId: number;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -31,7 +31,7 @@ export const getCommentsByUserId = cache(async (userId: number) => {
 export const createComment = cache(
   async (body: string, userId: number, postId: number) => {
     const [newComment] = await sql<Comment[]>`
-    INSERT INTO comments (name, description)
+    INSERT INTO comments (body, user_id, post_id)
     VALUES ( ${body}, ${userId}, ${postId})
     RETURNING *`;
     return newComment;
