@@ -2,7 +2,10 @@ import React from 'react';
 
 export function CreateDao() {
   return (
-    <div className="card flex flex-1  h-[1056px] glass ml-[24px] my-8 align-bottom basis-3/7"></div>
+    <div className="bg-white rounded shadow p-4">
+      <h2 className="text-xl font-bold mb-2">Create DAO</h2>
+      <p>Content goes here...</p>
+    </div>
   );
 }
 

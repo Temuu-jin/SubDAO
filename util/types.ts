@@ -44,9 +44,3 @@ export type LoginResponse = {
   token: string;
   user: User;
 };
-
-export type CreateUserArgs = {
-  username: string;
-  email: string;
-  password: string;
-};

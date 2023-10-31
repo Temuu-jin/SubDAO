@@ -5,16 +5,16 @@ import Post from './components/Post';
 
 export default function Home() {
   return (
-    <main>
-      <div className="px-40">
-        <div className=" ">
-          <div className="flex flex-col">
+    <main className="bg-gray-100 min-h-screen p-4">
+      <div className="container mx-auto">
+        <div className="flex gap-4">
+          <div className="flex-1">
             <Post />
             <Post />
             <Post />
             <Post />
           </div>
-          <div className="">
+          <div className="w-1/4">
             <CreateSidebar />
           </div>
         </div>

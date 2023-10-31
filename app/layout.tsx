@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { checkLogin } from '../util/auth';
 import { ApolloClientProvider } from './ApolloClientProvider';
-import Signout from './Signout.js';
+import Signout from './components/Signout.js';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,36 +25,26 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className="w-full bg-gray-300 flex flex-row z-10 justify-around h-10 items-center">
-          <div className="flex ">Logo</div>
-          <div className="flex flex-row gap-14">
-            <Link href="/">Feed</Link>
+        <nav className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
+          <div className="text-xl font-bold">Subdapp</div>
+          <div className="flex gap-4">
+            <Link href="/">Home</Link>
             <Link href="/">DAOs</Link>
-            <Link href="/">About Us</Link>
+            <Link href="/">About</Link>
           </div>
-          {loggedIn === false ? (
-            <div className="flex flex-row gap-14">
-              <Link href={{ pathname: '/login' }} passHref>
-                Login
-              </Link>
-              <Link href={{ pathname: '/signup' }} passHref>
-                Signup
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-row justify-around">
-              <Link
-                href={{ pathname: '/profile' }}
-                className="flex flex-row gap-20"
-                passHref
-              >
-                My Profile
-              </Link>
-              <div className="ml-10">
+          <div className="flex gap-4">
+            {loggedIn === false ? (
+              <>
+                <Link href="/login">Login</Link>
+                <Link href="/signup">Signup</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/profile">Profile</Link>
                 <Signout />
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </nav>
         <ApolloClientProvider>{children}</ApolloClientProvider>
       </body>

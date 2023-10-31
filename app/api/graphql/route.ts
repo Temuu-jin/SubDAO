@@ -29,7 +29,7 @@ import {
   getUserByUsername,
   getUsers,
 } from '../../../database/users';
-import { CreateUserArgs, LoginResponse, User } from '../../../util/types';
+import { LoginResponse } from '../../../util/types';
 
 // typeDefs
 const typeDefs = gql`
@@ -157,7 +157,10 @@ const resolvers = {
   },
 
   Mutation: {
-    registerUser: async (parent: null, args: CreateUserArgs) => {
+    registerUser: async (
+      parent: null,
+      args: { username: string; email: string; password: string },
+    ) => {
       if (
         typeof args.username !== 'string' ||
         typeof args.email !== 'string' ||
