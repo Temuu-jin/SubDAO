@@ -4,11 +4,10 @@ export type User = {
   passwordHash: string;
   email: string;
   createdAt?: Date;
-  // Uncomment the fields below if you need them
-  // bio: string;
-  // postCount: number;
-  // commentCount: number;
-  // daos: number[];
+  bio: string;
+  postCount: number;
+  commentCount: number;
+  daos: number[];
 };
 
 export type Post = {
@@ -16,6 +15,7 @@ export type Post = {
   title: string;
   body: string;
   userId: number;
+  daoId: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -25,6 +25,7 @@ export type Comment = {
   body: string;
   userId: number;
   postId: number;
+  commentRef: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -33,6 +34,7 @@ export type Dao = {
   id: number;
   name: string;
   description: string;
+  createdBy: number;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -13,17 +13,21 @@ export const getDaoById = cache(async (id: number) => {
 });
 
 export const getDaoByUserid = cache(async (userId: number) => {
-  const [dao] = await sql<Dao[]>`SELECT * FROM daos WHERE userId = ${userId}`;
+  const [dao] = await sql<
+    Dao[]
+  >`SELECT * FROM daos WHERE created_by = ${userId}`;
   return dao;
 });
 
-export const createDao = cache(async (name: string, description: string) => {
-  const [newDao] = await sql<Dao[]>`
-    INSERT INTO daos (name, description)
-    VALUES (${name}, ${description})
+export const createDao = cache(
+  async (name: string, description: string, userId: number) => {
+    const [newDao] = await sql<Dao[]>`
+    INSERT INTO daos (name, description, created_by)
+    VALUES (${name}, ${description}, ${userId})
     RETURNING *`;
-  return newDao;
-});
+    return newDao;
+  },
+);
 
 export const deleteDao = cache(async (id: number) => {
   const [dao] = await sql<Dao[]>`

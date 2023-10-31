@@ -6,11 +6,11 @@ export async function up(sql: Sql) {
     username varchar(40) NOT NULL UNIQUE,
     password_hash varchar(100) NOT NULL,
     email varchar(100) NOT NULL UNIQUE,
-    created_at timestamp DEFAULT NOW()
-    /* bio text NOT NULL,
-    post_count integer NOT NULL DEFAULT 0,
-    comment_count integer NOT NULL DEFAULT 0,
-    daos integer[] NOT NULL DEFAULT '{}' */
+    bio text DEFAULT '',
+    created_at timestamp DEFAULT NOW(),
+    post_count integer DEFAULT 0,
+    comment_count integer DEFAULT 0,
+    daos integer[] DEFAULT '{}'
   );`;
 }
 

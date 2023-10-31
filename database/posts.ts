@@ -15,7 +15,7 @@ export const getPostById = cache(async (id: number) => {
 export const getPostByUserid = cache(async (userId: number) => {
   const [post] = await sql<
     Post[]
-  >`SELECT * FROM posts WHERE userId = ${userId}`;
+  >`SELECT * FROM posts WHERE user_id = ${userId}`;
   return post;
 });
 
@@ -24,6 +24,16 @@ export const createPost = cache(
     const [newPost] = await sql<Post[]>`
     INSERT INTO posts (title, body, user_id)
     VALUES (${title}, ${body}, ${userId})
+    RETURNING *`;
+    return newPost;
+  },
+);
+
+export const createPostInDao = cache(
+  async (title: string, body: string, userId: number, daoId: number) => {
+    const [newPost] = await sql<Post[]>`
+    INSERT INTO posts (title, body, user_id, dao_id)
+    VALUES (${title}, ${body}, ${userId}, ${daoId})
     RETURNING *`;
     return newPost;
   },

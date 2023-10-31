@@ -7,6 +7,7 @@ import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { createComment } from '../../../database/comments';
 import { createPost, deletePost, getPosts } from '../../../database/posts';
 import {
   createUser,
@@ -54,6 +55,7 @@ const typeDefs = gql`
     userId: ID!
     user: User!
     postId: ID!
+    commentRef: ID!
     post: Post!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -76,6 +78,10 @@ const typeDefs = gql`
     comment(id: ID!): Comment!
     daos: [Dao!]!
     dao(id: ID!): Dao!
+    postsByUser(userId: ID!): [Post!]!
+    commentsByPost(postId: ID!): [Comment!]!
+    commentsByUser(userId: ID!): [Comment!]!
+    postsByDao(daoId: ID!): [Post!]!
   }
 
   type Mutation {
@@ -106,6 +112,10 @@ const resolvers = {
     posts: async () => {
       return await getPosts();
     },
+    postsByUser: async (parent: null, args: { userId: string }) => {},
+    commentsByPost: async (parent: null, args: { postId: string }) => {},
+    commentsByUser: async (parent: null, args: { userId: string }) => {},
+    postsByDao: async (parent: null, args: { daoId: string }) => {},
   },
 
   Mutation: {
@@ -183,6 +193,41 @@ const resolvers = {
     deletePost: async (parent: null, args: { id: number }) => {
       const post = await deletePost(args.id);
       return post;
+    },
+    createDao: async (
+      parent: null,
+      args: { name: string; description: string; userId: string },
+    ) => {
+      if (
+        !args.name ||
+        !args.description ||
+        !args.userId ||
+        typeof args.userId !== 'string' ||
+        typeof args.name !== 'string' ||
+        typeof args.description !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+      const userId = parseInt(args.userId);
+      return await createPost(args.name, args.description, userId);
+    },
+    createComment: async (
+      parent: null,
+      args: { body: string; postId: string; userId: string },
+    ) => {
+      if (
+        !args.body ||
+        !args.postId ||
+        !args.userId ||
+        typeof args.body !== 'string' ||
+        typeof args.postId !== 'string' ||
+        typeof args.userId !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+      const userId = parseInt(args.userId);
+      const postId = parseInt(args.postId);
+      return await createComment(args.body, postId, userId);
     },
   },
 };
