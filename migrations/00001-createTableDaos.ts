@@ -3,7 +3,7 @@ import { Sql } from 'postgres';
 export async function up(sql: Sql) {
   await sql`CREATE TABLE daos (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name varchar(100) NOT NULL,
+    name varchar(100) NOT NULL UNIQUE,
     description text NOT NULL,
     created_by integer REFERENCES users(id),
     created_at timestamp DEFAULT NOW(),
