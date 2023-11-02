@@ -9,7 +9,7 @@ const createDaoMutation = gql`
     createDao(name: $name, description: $description, userId: $userId) {
       name
       description
-      userId
+      createdBy
     }
   }
 `;
@@ -18,10 +18,8 @@ export default function CreateDaoForm({ userId }: { userId: number }) {
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
   const [onError, setOnError] = useState('');
-  console.log('name', name);
-  console.log('description', description);
-  console.log('userId', userId);
   const router = useRouter();
+  console.log('userId', userId, 'typeof userId', typeof userId);
   const [createDao] = useMutation(createDaoMutation, {
     variables: {
       name,
@@ -29,20 +27,12 @@ export default function CreateDaoForm({ userId }: { userId: number }) {
       userId: userId.toString(),
     },
     onError: (error) => {
-      console.log(
-        'name',
-        name,
-        'description',
-        description,
-        'userId',
-        userId,
-        typeof userId,
-      );
+      console.log('onError', error);
       setOnError(error.message);
       return onError;
     },
-    onCompleted: async () => {
-      await router.push('/daos');
+    onCompleted: () => {
+      router.push('/daos');
     },
   });
 

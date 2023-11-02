@@ -30,7 +30,7 @@ import {
   getUsers,
 } from '../../../database/users';
 import { createSessionToken } from '../../../util/auth';
-import { LoginResponse } from '../../../util/types';
+import { Dao, LoginResponse } from '../../../util/types';
 
 // typeDefs
 const typeDefs = gql`
@@ -79,7 +79,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     description: String!
-    userId: String!
+    createdBy: String!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -205,6 +205,24 @@ const resolvers = {
       cookies().set('sessionToken', sessionToken.toString());
       return { user } as LoginResponse;
     },
+    createDao: async (
+      parent: null,
+      args: { name: string; description: string; userId: string },
+    ) => {
+      if (
+        !args.name ||
+        !args.description ||
+        !args.userId ||
+        typeof args.userId !== 'string' ||
+        typeof args.name !== 'string' ||
+        typeof args.description !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+      console.log('route.ts userId:', args.userId);
+      // const createdBy = parseInt(args.userId);
+      return await createDao(args.name, args.description, args.userId);
+    },
     createPost: async (
       parent: null,
       args: { title: string; body: string; userId: number },
@@ -239,23 +257,7 @@ const resolvers = {
       const post = await deletePost(args.id);
       return post;
     },
-    createDao: async (
-      parent: null,
-      args: { name: string; description: string; userId: string },
-    ) => {
-      if (
-        !args.name ||
-        !args.description ||
-        !args.userId ||
-        typeof args.userId !== 'string' ||
-        typeof args.name !== 'string' ||
-        typeof args.description !== 'string'
-      ) {
-        throw new GraphQLError('Required field is missing');
-      }
-      const userId = parseInt(args.userId);
-      return await createDao(args.name, args.description, userId);
-    },
+
     createComment: async (
       parent: null,
       args: { body: string; postId: string; userId: string },
@@ -300,7 +302,7 @@ export async function GET(req: NextRequest): Promise<any> {
   }
 }
 
-export async function POST(req: NextRequest, res: NextResponse): Promise<any> {
+export async function POST(req: NextRequest): Promise<any> {
   try {
     console.log('im in post');
 

@@ -29,7 +29,7 @@ export default async function RootLayout({
           <div className="text-xl font-bold">Subdapp</div>
           <div className="flex gap-4">
             <Link href="/">Home</Link>
-            <Link href="/">DAOs</Link>
+            <Link href="/daos">DAOs</Link>
             <Link href="/">About</Link>
           </div>
           <div className="flex gap-4">

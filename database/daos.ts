@@ -20,7 +20,7 @@ export const getDaoByUserId = cache(async (userId: number) => {
 });
 
 export const createDao = cache(
-  async (name: string, description: string, userId: number) => {
+  async (name: string, description: string, userId: string) => {
     const [newDao] = await sql<Dao[]>`
     INSERT INTO daos (name, description, created_by)
     VALUES (${name}, ${description}, ${userId})
