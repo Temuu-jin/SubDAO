@@ -1,6 +1,7 @@
 import { jwtVerify } from 'jose';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { getParsedCookie } from './cookies';
 import { User } from './types';
 
 export const getJwtSecretKey = () => {
@@ -16,15 +17,11 @@ export const checkLogin = async () => {
   if (!token) {
     return false;
   }
-  try {
-    const verified = await jwtVerify(
-      token,
-      new TextEncoder().encode(getJwtSecretKey()),
-    );
-    return verified ? true : false;
-  } catch (err) {
-    console.log('no token, cant verify', err);
-  }
+  const verified = await jwtVerify(
+    token,
+    new TextEncoder().encode(getJwtSecretKey()),
+  );
+  return verified ? true : false;
 };
 
 export const getJWT = async () => {
@@ -34,29 +31,27 @@ export const getJWT = async () => {
     token!,
     process.env.JWT_SECRET!,
   ) as jwt.JwtPayload;
-  console.log('tokenVerified:', tokenVerified);
 
   return tokenVerified.payload;
 };
-
-export const getUserId = async () => {
-  const token = await cookies().get('sessionToken')?.value.toString();
-  const tokenVerified = jwt.verify(
-    token!,
-    process.env.JWT_SECRET!,
-  ) as jwt.JwtPayload;
-  console.log('tokenVerified:', tokenVerified);
-  const tokenId = tokenVerified.userId!;
-  if (!tokenId) {
-    throw new Error('No user id found');
+export type GetUserResponse = {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: string;
+};
+export const getUser = async () => {
+  const dataString: string = await getParsedCookie().toString();
+  const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
+  if (!dataString) {
+    return undefined;
   }
-  console.log('tokenVerified:', tokenVerified);
-  return parseInt(tokenId);
+  return user as GetUserResponse;
 };
 
 export const createSessionToken = async (user: User) => {
   const payload = {
-    userId: user.id,
+    id: user.id,
     username: user.username,
     email: user.email,
     createdAt: user.createdAt,

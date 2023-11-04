@@ -21,7 +21,7 @@ export default async function RootLayout({
 }) {
   const token = await cookies().get('sessionToken');
   const loggedIn = await checkLogin();
-
+  console.log('loggedIn', loggedIn);
   return (
     <html lang="en">
       <body className={inter.className}>

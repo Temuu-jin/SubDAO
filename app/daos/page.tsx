@@ -1,10 +1,16 @@
 import '../globals.css';
-import DaoPage from '../components/DaosPage';
+import { redirect } from 'next/navigation';
+import { getUser } from '../../util/auth';
+import DaosPage from '../components/DaosPage';
 
 export default async function Daos() {
-  return (
+  const user = await getUser();
+
+  return user ? (
     <main className="bg-gray-100 min-h-screen p-4">
-      <DaoPage />
+      <DaosPage />
     </main>
+  ) : (
+    redirect('/login')
   );
 }

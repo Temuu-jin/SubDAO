@@ -4,23 +4,28 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
-import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import {
   createComment,
+  createCommentInComment,
   getComments,
   getCommentsByPostId,
   getCommentsByUserId,
 } from '../../../database/comments';
-import { createDao, deleteDao, getDaos } from '../../../database/daos';
+import {
+  createDao,
+  deleteDao,
+  getDaos,
+  getDaosFromUser,
+} from '../../../database/daos';
 import {
   createPost,
   createPostInDao,
   deletePost,
-  getPostByDaoId,
-  getPostByUserId,
   getPosts,
+  getPostsByDaoId,
+  getPostsByUserId,
 } from '../../../database/posts';
 import {
   createUser,
@@ -28,9 +33,11 @@ import {
   getUserById,
   getUserByUsername,
   getUsers,
+  joinDao,
+  leaveDao,
 } from '../../../database/users';
 import { createSessionToken } from '../../../util/auth';
-import { Dao, LoginResponse } from '../../../util/types';
+import { LoginResponse } from '../../../util/types';
 
 // typeDefs
 const typeDefs = gql`
@@ -42,10 +49,10 @@ const typeDefs = gql`
     passwordHash: String!
     email: String!
     createdAt: DateTime!
-    bio: String!
-    postCount: Int!
-    commentCount: Int!
-    daos: [Int!]
+    bio: String
+    postCount: Int
+    commentCount: Int
+    daos: [Int]
   }
 
   type LoginResponse {
@@ -69,19 +76,19 @@ const typeDefs = gql`
     userId: ID!
     user: User
     postId: ID!
-    commentRef: ID
+    commentId: ID
     post: Post
     createdAt: DateTime!
     updatedAt: DateTime!
   }
 
   type Dao {
-    id: ID!
-    name: String!
-    description: String!
-    createdBy: String!
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    id: ID
+    name: String
+    description: String
+    createdBy: String
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type Query {
@@ -97,16 +104,22 @@ const typeDefs = gql`
     commentsByPost(postId: ID!): [Comment!]!
     commentsByUser(userId: ID!): [Comment!]!
     postsByDao(daoId: ID!): [Post!]!
+    daosFromUser(daos: [Int!]!): [Dao!]!
   }
 
   type Mutation {
     registerUser(email: String!, username: String!, password: String!): User!
     deleteUser(id: ID!): User!
     loginUser(username: String!, password: String!): LoginResponse!
-    createPost(title: String!, body: String!, userId: ID!): Post!
+    createPost(title: String!, body: String!, userId: ID!, daoId: ID): Post!
     updatePost(id: ID!, title: String!, body: String!): Post!
     deletePost(id: ID!): Post!
-    createComment(body: String!, postId: ID!, userId: ID!): Comment!
+    createComment(
+      body: String!
+      userId: ID!
+      postId: ID!
+      commentId: ID
+    ): Comment!
     updateComment(id: ID!, body: String!): Comment!
     deleteComment(id: ID!): Comment!
     createDao(name: String!, description: String!, userId: String!): Dao!
@@ -118,6 +131,8 @@ const typeDefs = gql`
       userId: ID!
       daoId: ID!
     ): Post!
+    joinDao(userId: ID!, daoId: ID!): User!
+    leaveDao(userId: ID!, daoId: ID!): User!
   }
 `;
 
@@ -127,8 +142,8 @@ const resolvers = {
     users: async () => {
       return await getUsers();
     },
-    user: async (parent: null, args: { id: string }) => {
-      return await getUserById(parseInt(args.id));
+    user: async (parent: null, args: { id: number }) => {
+      return await getUserById(args.id);
     },
     posts: async () => {
       return await getPosts();
@@ -141,7 +156,7 @@ const resolvers = {
     },
     postsByUser: async (parent: null, args: { userId: string }) => {
       const userId = parseInt(args.userId);
-      return await getPostByUserId(userId);
+      return await getPostsByUserId(userId);
     },
     commentsByPost: async (parent: null, args: { postId: string }) => {
       const postId = parseInt(args.postId);
@@ -153,7 +168,11 @@ const resolvers = {
     },
     postsByDao: async (parent: null, args: { daoId: string }) => {
       const daoId = parseInt(args.daoId);
-      return await getPostByDaoId(daoId);
+      return await getPostsByDaoId(daoId);
+    },
+    daosFromUser: async (parent: null, args: { daos: number[] }) => {
+      console.log(args.daos);
+      return await getDaosFromUser(args.daos);
     },
   },
 
@@ -219,40 +238,35 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
-      console.log('route.ts userId:', args.userId);
       // const createdBy = parseInt(args.userId);
       return await createDao(args.name, args.description, args.userId);
     },
     createPost: async (
-      parent: null,
-      args: { title: string; body: string; userId: number },
-    ) => {
-      if (
-        !args.body ||
-        !args.title ||
-        typeof args.body !== 'string' ||
-        typeof args.title !== 'string'
-      ) {
-        throw new GraphQLError('Required field is missing');
-      }
-      return await createPost(args.title, args.body, args.userId);
-    },
-    createPostInDao: async (
       parent: null,
       args: { title: string; body: string; userId: string; daoId: string },
     ) => {
       if (
         !args.body ||
         !args.title ||
+        !args.userId ||
+        typeof args.userId !== 'string' ||
         typeof args.body !== 'string' ||
         typeof args.title !== 'string'
       ) {
         throw new GraphQLError('Required field is missing');
       }
-      const userId = parseInt(args.userId);
-      const daoId = parseInt(args.daoId);
-      return await createPostInDao(args.title, args.body, userId, daoId);
+
+      if (args.daoId) {
+        const userId = parseInt(args.userId);
+        const daoId = parseInt(args.daoId);
+        return await createPostInDao(args.title, args.body, userId, daoId);
+      }
+      if (!args.daoId || args.daoId === '') {
+        const userId = parseInt(args.userId);
+        return await createPost(args.title, args.body, userId);
+      }
     },
+
     deletePost: async (parent: null, args: { id: number }) => {
       const post = await deletePost(args.id);
       return post;
@@ -260,7 +274,7 @@ const resolvers = {
 
     createComment: async (
       parent: null,
-      args: { body: string; postId: string; userId: string },
+      args: { body: string; userId: string; postId: string; commentId: string },
     ) => {
       if (
         !args.body ||
@@ -274,11 +288,44 @@ const resolvers = {
       }
       const userId = parseInt(args.userId);
       const postId = parseInt(args.postId);
-      return await createComment(args.body, postId, userId);
+      const commentId = parseInt(args.commentId);
+      if (commentId) {
+        return await createCommentInComment(
+          args.body,
+          userId,
+          postId,
+          commentId,
+        );
+      }
+      return await createComment(args.body, userId, postId);
     },
     deleteDao: async (parent: null, args: { id: number }) => {
       const dao = await deleteDao(args.id);
       return dao;
+    },
+    joinDao: async (parent: null, args: { userId: string; daoId: string }) => {
+      if (
+        !args.userId ||
+        !args.daoId ||
+        typeof args.userId !== 'string' ||
+        typeof args.daoId !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+
+      return await joinDao(args.userId, args.daoId);
+    },
+    leaveDao: async (parent: null, args: { userId: string; daoId: string }) => {
+      if (
+        !args.userId ||
+        !args.daoId ||
+        typeof args.userId !== 'string' ||
+        typeof args.daoId !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+
+      return await leaveDao(args.userId, args.daoId);
     },
   },
 };
@@ -294,7 +341,6 @@ const handler = startServerAndCreateNextHandler(apolloServer);
 
 export async function GET(req: NextRequest): Promise<any> {
   try {
-    console.log('im in get');
     return await handler(req);
   } catch (error) {
     console.error('Error handling GET request:', error);
@@ -304,8 +350,6 @@ export async function GET(req: NextRequest): Promise<any> {
 
 export async function POST(req: NextRequest): Promise<any> {
   try {
-    console.log('im in post');
-
     return await handler(req);
   } catch (error) {
     console.error('Error handling POST request:', error);

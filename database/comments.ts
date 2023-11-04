@@ -39,10 +39,10 @@ export const createComment = cache(
 );
 
 export const createCommentInComment = cache(
-  async (body: string, userId: number, postId: number, commentRef: number) => {
+  async (body: string, userId: number, postId: number, commentId: number) => {
     const [newComment] = await sql<Comment[]>`
-    INSERT INTO comments (name, description, comment_ref)
-    VALUES ( ${body}, ${userId}, ${postId}, ${commentRef})
+    INSERT INTO comments (body, user_id, post_id, comment_ref)
+    VALUES ( ${body}, ${userId}, ${postId}, ${commentId})
     RETURNING *`;
     return newComment;
   },

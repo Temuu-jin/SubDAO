@@ -1,9 +1,11 @@
 import '../../globals.css';
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDaoById } from '../../../database/daos';
 import { getUserById } from '../../../database/users';
+import { User } from '../../../util/types';
+import { DaoPosts } from '../../components/DaoPosts';
+import JoinDaoButton from '../../components/JoinDaoButton';
+import LeaveDaoButton from '../../components/LeaveDaoButton';
 
 type SingleDaoPageProps = {
   params: {
@@ -21,27 +23,41 @@ export async function generateMetadata({ params }: SingleDaoPageProps) {
 
 export default async function SingleDaoPage(props: SingleDaoPageProps) {
   const dao = await getDaoById(Number(props.params.daoId));
-  // const daoPosts = await getPostsByDaoId(Number(props.params.daoId));
-  const creator = await getUserById(Number(dao?.createdBy));
   if (!dao) {
     return notFound();
   }
+  // const daoPosts = await getPostsByDaoId(Number(props.params.daoId));
+
+  const user = await getUserById(dao.createdBy);
+
+  if (!user) {
+    return notFound();
+  }
+
+  console.log('user.id', user.id);
+  console.log('dao.id', dao.id);
 
   return (
     <main>
       <div className="flex-col">
+        {user?.daos.includes(parseInt(props.params.daoId)) === true ? (
+          <LeaveDaoButton
+            userId={user.id ? user.id.toString() : ''}
+            daoId={dao.id.toString()}
+          />
+        ) : (
+          <JoinDaoButton
+            userId={user.id ? user.id.toString() : ''}
+            daoId={dao.id.toString()}
+          />
+        )}
         <h1 className="flex justify-center text-xl">{dao.name}</h1>
         <p className="flex justify-center text-xs">{dao.description}</p>
         <p className="flex justify-center text-xs">
-          Created by: {creator?.username}
+          Created by: {user?.username}
         </p>
 
-        {/* Link to detailed posts or any other related info
-        {daoPosts.map(post => (
-          <Link key={post.id} href={`/daos/${daoId}/posts/${post.id}`}>
-            <a className="block">{post.title}</a>
-          </Link>
-        ))} */}
+        <DaoPosts daoId={props.params.daoId} />
       </div>
 
       {/* If you have a component like "AddQuantity" for DAOs, add it here */}

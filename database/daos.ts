@@ -35,3 +35,14 @@ export const deleteDao = cache(async (id: number) => {
   RETURNING *`;
   return dao;
 });
+
+export const getDaosFromUser = async (daos: number[]) => {
+  const daoList = await Promise.all(
+    daos.map(async (id) => {
+      const dao = await sql<Dao[]>`
+  SELECT * FROM daos WHERE id=${id}`;
+      return dao[0];
+    }),
+  );
+  return daoList as Dao[];
+};

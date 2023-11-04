@@ -12,16 +12,16 @@ export const getPostById = cache(async (id: number) => {
   return post;
 });
 
-export const getPostByUserId = cache(async (userId: number) => {
-  const [post] = await sql<
+export const getPostsByUserId = cache(async (userId: number) => {
+  const posts = await sql<
     Post[]
   >`SELECT * FROM posts WHERE user_id = ${userId}`;
-  return post;
+  return posts;
 });
 
-export const getPostByDaoId = cache(async (daoId: number) => {
-  const [post] = await sql<Post[]>`SELECT * FROM posts WHERE dao_id = ${daoId}`;
-  return post;
+export const getPostsByDaoId = cache(async (daoId: number) => {
+  const posts = await sql<Post[]>`SELECT * FROM posts WHERE dao_id = ${daoId}`;
+  return posts;
 });
 
 export const createPost = cache(

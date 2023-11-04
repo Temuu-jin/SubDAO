@@ -1,9 +1,9 @@
 export type User = {
-  id?: number;
+  id: number;
   username: string;
   passwordHash: string;
   email: string;
-  createdAt?: Date;
+  createdAt: Date;
   bio: string;
   postCount: number;
   commentCount: number;

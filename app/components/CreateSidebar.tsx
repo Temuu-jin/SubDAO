@@ -20,7 +20,6 @@ export function CreateSidebar() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   const daos = data.daos as [Dao];
-  console.log('daos', daos);
   return (
     <div className="bg-white rounded shadow p-4 text-center">
       <Link
