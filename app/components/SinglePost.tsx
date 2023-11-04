@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { Comment, Post, User } from '../../util/types';
 import CreateCommentForm from './CreateCommentForm';
 
@@ -17,6 +18,7 @@ export default function SinglePost({
   console.log('user', user);
   console.log('post', post);
   console.log('comments', comments);
+  const [showCommentForm, setShowCommentForm] = useState(false);
   if (!user) {
     return (
       <main className="bg-gray-100 min-h-screen p-4">
@@ -67,20 +69,37 @@ export default function SinglePost({
           ) : null}
           <div className="w-full">
             {comments ? (
-              comments.map((comment) => (
-                <div key={comment.id} className="border-b border-gray-200 py-2">
-                  <p className="text-base">{comment.body}</p>
-                  <p className="text-sm text-gray-500">
-                    {comment.createdAt.toString()}
-                  </p>
-                  <p className="text-sm text-gray-500">by {comment.userId}</p>
-                  <CreateCommentForm
-                    userId={user.id}
-                    postId={post.id}
-                    commentId={comment.id}
-                  />
-                </div>
-              ))
+              <div>
+                {comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="border-b border-gray-200 py-2"
+                  >
+                    <p className="text-base">{comment.body}</p>
+                    <p className="text-sm text-gray-500">
+                      {comment.createdAt.toString()}
+                    </p>
+                    <p className="text-sm text-gray-500">by {comment.userId}</p>
+                  </div>
+                ))}
+
+                {showCommentForm ? (
+                  <div>
+                    <CreateCommentForm
+                      userId={user.id}
+                      postId={post.id}
+                      commentId={null}
+                    />
+                    <button onClick={() => setShowCommentForm(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowCommentForm(true)}>
+                    Comment
+                  </button>
+                )}
+              </div>
             ) : (
               <CreateCommentForm
                 userId={user.id}

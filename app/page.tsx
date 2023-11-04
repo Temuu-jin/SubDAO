@@ -1,5 +1,6 @@
 import './globals.css';
 import React from 'react';
+import { getPosts } from '../database/posts';
 import { getUserById } from '../database/users';
 import { getUser } from '../util/auth';
 import { User } from '../util/types';
@@ -8,6 +9,7 @@ import CreateSidebar from './components/CreateSidebar';
 import Post from './components/Post';
 
 export default async function Home() {
+  const posts = await getPosts();
   const user = await getUser();
   if (user) {
     const userData = await getUserById(parseInt(user.id));
@@ -18,12 +20,18 @@ export default async function Home() {
         </div>
         <div className="container mx-auto mt-4">
           <div className="flex gap-4">
-            <div className="flex-1">
-              <Post />
-              <Post />
-              <Post />
-              <Post />
-            </div>
+            <ul className="flex-1">
+              {posts.map((post) => (
+                <li key={post.id}>
+                  <h3>{post.title}</h3>
+                  <p>{post.body}</p>
+                  <p>
+                    Created by UserID: {post.userId} on{' '}
+                    {post.createdAt.toString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
             <div className="w-1/4">
               <CreateSidebar />
             </div>

@@ -9,6 +9,7 @@ import { NextRequest } from 'next/server';
 import {
   createComment,
   createCommentInComment,
+  deleteComment,
   getComments,
   getCommentsByPostId,
   getCommentsByUserId,
@@ -18,6 +19,8 @@ import {
   deleteDao,
   getDaos,
   getDaosFromUser,
+  memberMinusOne,
+  memberPlusOne,
 } from '../../../database/daos';
 import {
   createPost,
@@ -37,7 +40,7 @@ import {
   leaveDao,
 } from '../../../database/users';
 import { createSessionToken } from '../../../util/auth';
-import { LoginResponse } from '../../../util/types';
+import { Dao, LoginResponse } from '../../../util/types';
 
 // typeDefs
 const typeDefs = gql`
@@ -86,6 +89,7 @@ const typeDefs = gql`
     id: ID
     name: String
     description: String
+    memberCount: Int
     createdBy: String
     createdAt: DateTime
     updatedAt: DateTime
@@ -239,7 +243,13 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       // const createdBy = parseInt(args.userId);
-      return await createDao(args.name, args.description, args.userId);
+      const dao = (await createDao(
+        args.name,
+        args.description,
+        args.userId,
+      )) as Dao;
+      const joinedUser = await joinDao(args.userId, dao.id.toString());
+      return dao;
     },
     createPost: async (
       parent: null,
@@ -312,8 +322,9 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
+      const newDao = await memberPlusOne(parseInt(args.daoId));
 
-      return await joinDao(args.userId, args.daoId);
+      return await joinDao(args.userId, newDao.id.toString());
     },
     leaveDao: async (parent: null, args: { userId: string; daoId: string }) => {
       if (
@@ -324,8 +335,13 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
-
-      return await leaveDao(args.userId, args.daoId);
+      const newDao = await memberMinusOne(parseInt(args.daoId));
+      return await leaveDao(args.userId, newDao.id.toString());
+    },
+    deleteComment: async (parent: null, args: { id: string }) => {
+      const commentId = parseInt(args.id);
+      const comment = await deleteComment(commentId);
+      return comment;
     },
   },
 };

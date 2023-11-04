@@ -5,6 +5,7 @@ export async function up(sql: Sql) {
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name varchar(100) NOT NULL UNIQUE,
     description text NOT NULL,
+    member_count integer DEFAULT 1,
     created_by integer REFERENCES users(id),
     created_at timestamp DEFAULT NOW(),
     updated_at timestamp DEFAULT NOW()

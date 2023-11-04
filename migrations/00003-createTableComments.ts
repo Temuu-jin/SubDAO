@@ -7,6 +7,8 @@ export async function up(sql: Sql) {
     user_id integer NOT NULL REFERENCES users(id),
     post_id integer NOT NULL REFERENCES posts(id),
     comment_ref integer REFERENCES comments(id) ,
+    upvotes integer DEFAULT 0,
+    downvotes integer DEFAULT 0,
     created_at timestamp DEFAULT NOW(),
     updated_at timestamp DEFAULT NOW()
   );`;

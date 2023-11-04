@@ -46,3 +46,21 @@ export const getDaosFromUser = async (daos: number[]) => {
   );
   return daoList as Dao[];
 };
+
+export const memberPlusOne = async (id: number) => {
+  const [dao] = await sql<Dao[]>`
+  UPDATE daos
+  SET member_count = member_count + 1
+  WHERE id = ${id}
+  RETURNING *`;
+  return dao as Dao;
+};
+
+export const memberMinusOne = async (id: number) => {
+  const [dao] = await sql<Dao[]>`
+  UPDATE daos
+  SET member_count = member_count - 1
+  WHERE id = ${id}
+  RETURNING *`;
+  return dao as Dao;
+};
