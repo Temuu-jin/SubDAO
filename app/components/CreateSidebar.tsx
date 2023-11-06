@@ -21,18 +21,23 @@ export function CreateSidebar() {
   if (error) return <div>Error: {error.message}</div>;
   const daos = data.daos as [Dao];
   return (
-    <div className="bg-white rounded shadow p-4 text-center">
+    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
       <Link
         href="/createdao"
-        className="  w-2/3 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+        className="mb-4 text-white bg-blue-600 hover:bg-blue-700 font-medium py-2 px-4 rounded-full w-full text-center transition duration-300 ease-in-out"
       >
         Create DAO
       </Link>
-      <h2 className="text-xl font-bold mb-2 mt-5">DAOs</h2>
-      <ul className="list-disc pl-5 list-none">
+      <h2 className="text-xl font-bold mb-4 w-full text-left">DAOs</h2>
+      <ul className="list-none w-full">
         {daos.map((dao) => (
-          <li key={`dao-${dao.id}`}>
-            <a href={`/daos/${dao.id}`}>{dao.name}</a>
+          <li key={`dao-${dao.id}`} className="mb-2">
+            <Link
+              href={`/daos/${dao.id}`}
+              className="text-blue-600 hover:underline"
+            >
+              {dao.name}
+            </Link>
           </li>
         ))}
       </ul>

@@ -43,3 +43,27 @@ export type LoginResponse = {
   token: string;
   user: User;
 };
+
+export type Vote = {
+  id: number;
+  userId: number;
+  postId?: number | null;
+  commentId?: number | null;
+  voteType: -1 | 1;
+  createdAt: Date;
+};
+export type Membership = {
+  userId: number;
+  daoId: number;
+  role?: string; // This can be optional if not every membership has a defined role.
+  joinedAt: Date;
+};
+
+export type VoteData = {
+  upvotes: number;
+  downvotes: number;
+  totalVotes: number;
+  upMinusDown: number;
+  postId: number;
+  commentId: number;
+};

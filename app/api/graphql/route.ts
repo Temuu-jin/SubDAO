@@ -23,6 +23,15 @@ import {
   memberPlusOne,
 } from '../../../database/daos';
 import {
+  addMembership,
+  getAllMembersInDao,
+  getAllUserMemberships,
+  makeMemberAdmin,
+  removeAdmin,
+  removeMembership,
+  updateMembershipRole,
+} from '../../../database/memberships';
+import {
   createPost,
   createPostInDao,
   deletePost,
@@ -39,6 +48,18 @@ import {
   joinDao,
   leaveDao,
 } from '../../../database/users';
+import {
+  downvoteComment,
+  downvotePost,
+  getAllVotesForComment,
+  getAllVotesForPost,
+  getVoteForCommentByUser,
+  getVoteForPostByUser,
+  undoVoteOnComment,
+  undoVoteOnPost,
+  upvoteComment,
+  upvotePost,
+} from '../../../database/votes';
 import { createSessionToken } from '../../../util/auth';
 import { Dao, LoginResponse } from '../../../util/types';
 
@@ -95,6 +116,31 @@ const typeDefs = gql`
     updatedAt: DateTime
   }
 
+  type Vote {
+    id: ID!
+    userId: ID!
+    postId: ID
+    commentId: ID
+    voteType: Int!
+    createdAt: String!
+  }
+
+  type Membership {
+    userId: ID!
+    daoId: ID!
+    role: String!
+    joinedAt: String!
+  }
+
+  type VoteData {
+    upvotes: Int!
+    downvotes: Int!
+    totalVotes: Int!
+    upMinusDown: Int!
+    postId: ID
+    commentId: ID
+  }
+
   type Query {
     users: [User!]!
     user(id: ID!): User!
@@ -109,6 +155,12 @@ const typeDefs = gql`
     commentsByUser(userId: ID!): [Comment!]!
     postsByDao(daoId: ID!): [Post!]!
     daosFromUser(daos: [Int!]!): [Dao!]!
+    votesOnPost(postId: ID!): VoteData!
+    votesOnComment(commentId: ID!): VoteData!
+    postVoteUser(userId: ID!, postId: ID!): Vote
+    commentVoteUser(userId: ID!, commentId: ID!): Vote
+    getDaoMembers(daoId: ID!): [Membership]
+    getUserMemberships(userId: ID!): [Membership]
   }
 
   type Mutation {
@@ -135,8 +187,18 @@ const typeDefs = gql`
       userId: ID!
       daoId: ID!
     ): Post!
-    joinDao(userId: ID!, daoId: ID!): User!
-    leaveDao(userId: ID!, daoId: ID!): User!
+    joinDao(userId: ID!, daoId: ID!): Membership
+    leaveDao(userId: ID!, daoId: ID!): Boolean
+    upvotePost(userId: ID!, postId: ID!): Vote
+    downvotePost(userId: ID!, postId: ID!): Vote
+    upvoteComment(userId: ID!, commentId: ID!): Vote
+    downvoteComment(userId: ID!, commentId: ID!): Vote
+    undoVoteOnPost(userId: ID!, postId: ID!): Boolean
+    undoVoteOnComment(userId: ID!, commentId: ID!): Boolean
+    addMembership(userId: ID!, daoId: ID!, role: String): Membership
+    removeMembership(userId: ID!, daoId: ID!): Boolean
+    makeAdmin(userId: ID!, daoId: ID!): Membership
+    removeAdmin(userId: ID!, daoId: ID!): Membership
   }
 `;
 
@@ -177,6 +239,62 @@ const resolvers = {
     daosFromUser: async (parent: null, args: { daos: number[] }) => {
       console.log(args.daos);
       return await getDaosFromUser(args.daos);
+    },
+    votesOnPost: async (parent: null, args: { postId: number }) => {
+      const votes = await getAllVotesForPost(args.postId);
+      const upvotes = votes.filter((vote) => vote.voteType === 1).length;
+      const downvotes = votes.filter((vote) => vote.voteType === -1).length;
+      const totalVotes = votes.length;
+      const upMinusDown = upvotes - downvotes;
+      const votesData = {
+        upvotes,
+        downvotes,
+        totalVotes,
+        upMinusDown,
+        postId: args.postId,
+      };
+
+      // You need to return something from this function
+      return votesData;
+    },
+    votesOnComment: async (parent: null, args: { commentId: number }) => {
+      const votes = await getAllVotesForComment(args.commentId);
+      const upvotes = votes.filter((vote) => vote.voteType === 1).length;
+      const downvotes = votes.filter((vote) => vote.voteType === -1).length;
+      const totalVotes = votes.length;
+      const upMinusDown = upvotes - downvotes;
+      const votesData = {
+        upvotes,
+        downvotes,
+        totalVotes,
+        upMinusDown,
+        commentId: args.commentId,
+      };
+
+      // You need to return something from this function
+      return votesData;
+    },
+    postVoteUser: async (
+      parent: null,
+      args: { userId: number; postId: number },
+    ) => {
+      const vote = await getVoteForPostByUser(args.userId, args.postId);
+      return vote;
+    },
+    commentVoteUser: async (
+      parent: null,
+      args: { userId: number; commentId: number },
+    ) => {
+      const vote = await getVoteForCommentByUser(args.userId, args.commentId);
+      return vote;
+    },
+    getDaoMembers: async (parent: null, args: { daoId: number }) => {
+      const members = await getAllMembersInDao(args.daoId);
+      return members;
+    },
+    getUserMemberships: async (parent: null, args: { userId: number }) => {
+      const memberships = await getAllUserMemberships(args.userId);
+      return memberships;
     },
   },
 
@@ -248,7 +366,8 @@ const resolvers = {
         args.description,
         args.userId,
       )) as Dao;
-      const joinedUser = await joinDao(args.userId, dao.id.toString());
+      await addMembership(parseInt(args.userId), dao.id);
+      await makeMemberAdmin(parseInt(args.userId), dao.id);
       return dao;
     },
     createPost: async (
@@ -271,7 +390,7 @@ const resolvers = {
         const daoId = parseInt(args.daoId);
         return await createPostInDao(args.title, args.body, userId, daoId);
       }
-      if (!args.daoId || args.daoId === '') {
+      if (!args.daoId || args.daoId === '0') {
         const userId = parseInt(args.userId);
         return await createPost(args.title, args.body, userId);
       }
@@ -323,8 +442,11 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       const newDao = await memberPlusOne(parseInt(args.daoId));
-
-      return await joinDao(args.userId, newDao.id.toString());
+      const newMember = await addMembership(
+        parseInt(args.userId),
+        parseInt(args.daoId),
+      );
+      return newMember;
     },
     leaveDao: async (parent: null, args: { userId: string; daoId: string }) => {
       if (
@@ -336,12 +458,78 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       const newDao = await memberMinusOne(parseInt(args.daoId));
-      return await leaveDao(args.userId, newDao.id.toString());
+
+      return await removeMembership(
+        parseInt(args.userId),
+        parseInt(args.daoId),
+      );
     },
     deleteComment: async (parent: null, args: { id: string }) => {
       const commentId = parseInt(args.id);
       const comment = await deleteComment(commentId);
       return comment;
+    },
+    upvotePost: async (
+      parent: null,
+      args: { userId: number; postId: number },
+    ) => {
+      return await upvotePost(args.userId, args.postId);
+    },
+    downvotePost: async (
+      parent: null,
+      args: { userId: number; postId: number },
+    ) => {
+      return await downvotePost(args.userId, args.postId);
+    },
+    upvoteComment: async (
+      parent: null,
+      args: { userId: number; commentId: number },
+    ) => {
+      return await upvoteComment(args.userId, args.commentId);
+    },
+    downvoteComment: async (
+      parent: null,
+      args: { userId: number; commentId: number },
+    ) => {
+      return await downvoteComment(args.userId, args.commentId);
+    },
+    undoVoteOnPost: async (
+      parent: null,
+      args: { userId: number; postId: number },
+    ) => {
+      return await undoVoteOnPost(args.userId, args.postId);
+    },
+    undoVoteOnComment: async (
+      parent: null,
+      args: { userId: number; commentId: number },
+    ) => {
+      return await undoVoteOnComment(args.userId, args.commentId);
+    },
+    addMembership: async (
+      parent: null,
+      args: { userId: number; daoId: number },
+    ) => {
+      await memberPlusOne(args.daoId);
+      return await addMembership(args.userId, args.daoId);
+    },
+    removeMembership: async (
+      parent: null,
+      args: { userId: number; daoId: number },
+    ) => {
+      await memberMinusOne(args.daoId);
+      return await removeMembership(args.userId, args.daoId);
+    },
+    makeAdmin: async (
+      parent: null,
+      args: { userId: number; daoId: number },
+    ) => {
+      return await makeMemberAdmin(args.userId, args.daoId);
+    },
+    removeAdmin: async (
+      parent: null,
+      args: { userId: number; daoId: number },
+    ) => {
+      return await removeAdmin(args.userId, args.daoId);
     },
   },
 };

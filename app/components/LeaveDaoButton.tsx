@@ -4,10 +4,7 @@ import { unstable_useCacheRefresh, useState } from 'react';
 
 const leaveDaoMutation = gql`
   mutation LeaveDao($userId: ID!, $daoId: ID!) {
-    leaveDao(userId: $userId, daoId: $daoId) {
-      username
-      daos
-    }
+    leaveDao(userId: $userId, daoId: $daoId)
   }
 `;
 
@@ -45,7 +42,7 @@ export default function LeaveDaoButton({
         await leaveDao();
       }}
     >
-      <button>Leave DAO</button>
+      <button className="text-blue-600 hover:text-blue-800">Leave DAO</button>
     </form>
   );
 }

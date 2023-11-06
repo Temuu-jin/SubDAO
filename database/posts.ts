@@ -50,3 +50,16 @@ export const deletePost = cache(async (id: number) => {
   RETURNING *`;
   return post;
 });
+
+export const upvotePost = cache(async (id: number) => {
+  const [post] = await sql<Post[]>`
+  UPDATE posts SET upvotes = upvotes + 1 WHERE id = ${id}
+  RETURNING *`;
+  return post;
+});
+export const downvotePost = cache(async (id: number) => {
+  const [post] = await sql<Post[]>`
+  UPDATE posts SET downvotes = downvotes + 1 WHERE id = ${id}
+  RETURNING *`;
+  return post;
+});

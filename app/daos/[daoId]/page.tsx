@@ -1,6 +1,7 @@
 import '../../globals.css';
 import { notFound } from 'next/navigation';
 import { getDaoById } from '../../../database/daos';
+import { getAllUserMemberships } from '../../../database/memberships';
 import { getUserById } from '../../../database/users';
 import { User } from '../../../util/types';
 import { DaoPosts } from '../../components/DaoPosts';
@@ -33,34 +34,52 @@ export default async function SingleDaoPage(props: SingleDaoPageProps) {
   if (!user) {
     return notFound();
   }
-
+  const userDaoMemberships = await getAllUserMemberships(user.id);
   console.log('user.id', user.id);
   console.log('dao.id', dao.id);
+  const member = userDaoMemberships.find(
+    (membership) => membership.daoId === dao.id,
+  );
 
   return (
-    <main>
-      <div className="flex-col">
-        {user?.daos.includes(parseInt(props.params.daoId)) === true ? (
-          <LeaveDaoButton
-            userId={user.id ? user.id.toString() : ''}
-            daoId={dao.id.toString()}
-          />
-        ) : (
-          <JoinDaoButton
-            userId={user.id ? user.id.toString() : ''}
-            daoId={dao.id.toString()}
-          />
-        )}
-        <h1 className="flex justify-center text-xl">{dao.name}</h1>
-        <p className="flex justify-center text-xs">{dao.description}</p>
-        <p className="flex justify-center text-xs">
-          Created by: {user?.username}
-        </p>
-
-        <DaoPosts daoId={props.params.daoId} />
+    <main className="bg-gray-100 min-h-screen">
+      {/* DAO Header */}
+      <div className="bg-white shadow">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold">{dao.name}</h1>
+              <p className="text-gray-600">{dao.description}</p>
+              <p className="text-gray-500 text-sm">
+                Created by: {user?.username}
+              </p>
+            </div>
+            <div>
+              {member ? (
+                <LeaveDaoButton
+                  userId={user.id ? user.id.toString() : ''}
+                  daoId={dao.id.toString()}
+                />
+              ) : (
+                <JoinDaoButton userId={user.id} daoId={dao.id} />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* If you have a component like "AddQuantity" for DAOs, add it here */}
+      {/* Placeholder for CreatePostForm area */}
+      <div className="container mx-auto px-4 py-4">
+        <div className="mb-6">
+          {/* Replace this div with the CreatePostForm component when ready */}
+          <div className="border border-dashed border-gray-300 rounded-lg h-40 flex justify-center items-center">
+            <span className="text-gray-500">Create Post Form Placeholder</span>
+          </div>
+        </div>
+
+        {/* DAO Posts */}
+        <DaoPosts daoId={props.params.daoId} />
+      </div>
     </main>
   );
 }

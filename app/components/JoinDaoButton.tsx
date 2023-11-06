@@ -5,9 +5,11 @@ import { unstable_useCacheRefresh, useState } from 'react';
 
 const joinDaoMutation = gql`
   mutation JoinDao($userId: ID!, $daoId: ID!) {
-    joinDao(userId: $userId, daoId: $daoId) {
-      username
-      daos
+    addMembership(userId: $userId, daoId: $daoId) {
+      userId
+      daoId
+      role
+      joinedAt
     }
   }
 `;
@@ -16,8 +18,8 @@ export default function JoinDaoButton({
   userId,
   daoId,
 }: {
-  userId: string;
-  daoId: string;
+  userId: number;
+  daoId: number;
 }) {
   const refresh = unstable_useCacheRefresh();
 
@@ -45,7 +47,9 @@ export default function JoinDaoButton({
         await joinDao();
       }}
     >
-      <button>Join DAO</button>
+      <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+        Join DAO
+      </button>
     </form>
   );
 }
