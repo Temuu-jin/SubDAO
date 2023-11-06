@@ -1,7 +1,7 @@
 'use client';
 import '../globals.css';
 import { gql, useMutation } from '@apollo/client';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const createUserMutation = gql`

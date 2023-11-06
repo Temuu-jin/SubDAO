@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { getDaoById } from '../../../database/daos';
 import { getAllUserMemberships } from '../../../database/memberships';
 import { getUserById } from '../../../database/users';
-import { User } from '../../../util/types';
 import { DaoPosts } from '../../components/DaoPosts';
 import JoinDaoButton from '../../components/JoinDaoButton';
 import LeaveDaoButton from '../../components/LeaveDaoButton';

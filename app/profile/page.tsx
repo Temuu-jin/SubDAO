@@ -1,6 +1,4 @@
-import { url } from 'inspector';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import Link from 'next/link';
 import { getPostsByUserId } from '../../database/posts';
 import { getParsedCookie } from '../../util/cookies';
 import { ProfilePosts } from '../components/ProfilePosts';

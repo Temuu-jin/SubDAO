@@ -29,7 +29,6 @@ import {
   makeMemberAdmin,
   removeAdmin,
   removeMembership,
-  updateMembershipRole,
 } from '../../../database/memberships';
 import {
   createPost,
@@ -45,8 +44,6 @@ import {
   getUserById,
   getUserByUsername,
   getUsers,
-  joinDao,
-  leaveDao,
 } from '../../../database/users';
 import {
   downvoteComment,
