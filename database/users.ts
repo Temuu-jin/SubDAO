@@ -36,19 +36,18 @@ export const deleteUser = cache(async (id: number) => {
   return user;
 });
 
-export const joinDao = async (userId: string, daoId: string) => {
+export const subPlusOne = async (userId: number) => {
   const [user] = await sql<User[]>`
   UPDATE users
-  SET daos = array_append(daos, ${daoId})
+  SET user_subscriptions = user_subscriptions + 1
   WHERE id = ${userId}
   RETURNING *`;
   return user;
 };
-
-export const leaveDao = async (userId: string, daoId: string) => {
+export const subMinusOne = async (userId: number) => {
   const [user] = await sql<User[]>`
   UPDATE users
-  SET daos = array_remove(daos, ${daoId})
+  SET user_subscriptions = user_subscriptions - 1
   WHERE id = ${userId}
   RETURNING *`;
   return user;

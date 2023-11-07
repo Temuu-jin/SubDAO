@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
+import { type } from 'os';
+import { as } from 'pg-promise';
 import {
   createComment,
   createCommentInComment,
@@ -24,7 +26,9 @@ import {
 } from '../../../database/daos';
 import {
   addMembership,
+  addMembershipSub,
   getAllMembersInDao,
+  getAllUserDaoMemberships,
   getAllUserMemberships,
   makeMemberAdmin,
   removeAdmin,
@@ -37,6 +41,7 @@ import {
   getPosts,
   getPostsByDaoId,
   getPostsByUserId,
+  getPublicPosts,
 } from '../../../database/posts';
 import {
   createUser,
@@ -52,13 +57,20 @@ import {
   getAllVotesForPost,
   getVoteForCommentByUser,
   getVoteForPostByUser,
+  getVotes,
   undoVoteOnComment,
   undoVoteOnPost,
   upvoteComment,
   upvotePost,
 } from '../../../database/votes';
 import { createSessionToken } from '../../../util/auth';
-import { Dao, LoginResponse } from '../../../util/types';
+import {
+  Dao,
+  LoginResponse,
+  Membership,
+  Post,
+  User,
+} from '../../../util/types';
 
 // typeDefs
 const typeDefs = gql`
@@ -87,6 +99,7 @@ const typeDefs = gql`
     userId: ID!
     daoId: ID
     user: User
+    membersOnly: Boolean!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -124,7 +137,8 @@ const typeDefs = gql`
 
   type Membership {
     userId: ID!
-    daoId: ID!
+    daoId: ID
+    subId: ID
     role: String!
     joinedAt: String!
   }
@@ -158,13 +172,24 @@ const typeDefs = gql`
     commentVoteUser(userId: ID!, commentId: ID!): Vote
     getDaoMembers(daoId: ID!): [Membership]
     getUserMemberships(userId: ID!): [Membership]
+    votes: [Vote!]!
+    getUserMembershipsFeed(userId: ID!): [Post!]!
+    userById(id: ID!): User!
+    getAllUserDaoMemberships(userId: ID!): [Membership]
+    getPublicPosts: [Post!]!
   }
 
   type Mutation {
     registerUser(email: String!, username: String!, password: String!): User!
     deleteUser(id: ID!): User!
     loginUser(username: String!, password: String!): LoginResponse!
-    createPost(title: String!, body: String!, userId: ID!, daoId: ID): Post!
+    createPost(
+      title: String!
+      body: String!
+      userId: ID!
+      daoId: ID
+      membersOnly: Boolean!
+    ): Post!
     updatePost(id: ID!, title: String!, body: String!): Post!
     deletePost(id: ID!): Post!
     createComment(
@@ -178,12 +203,7 @@ const typeDefs = gql`
     createDao(name: String!, description: String!, userId: String!): Dao!
     updateDao(id: ID!, name: String!, description: String!): Dao!
     deleteDao(id: ID!): Dao!
-    createPostInDao(
-      title: String!
-      body: String!
-      userId: ID!
-      daoId: ID!
-    ): Post!
+
     joinDao(userId: ID!, daoId: ID!): Membership
     leaveDao(userId: ID!, daoId: ID!): Boolean
     upvotePost(userId: ID!, postId: ID!): Vote
@@ -192,7 +212,8 @@ const typeDefs = gql`
     downvoteComment(userId: ID!, commentId: ID!): Vote
     undoVoteOnPost(userId: ID!, postId: ID!): Boolean
     undoVoteOnComment(userId: ID!, commentId: ID!): Boolean
-    addMembership(userId: ID!, daoId: ID!, role: String): Membership
+    addMembership(userId: ID!, daoId: ID, subId: ID, role: String): Membership
+
     removeMembership(userId: ID!, daoId: ID!): Boolean
     makeAdmin(userId: ID!, daoId: ID!): Membership
     removeAdmin(userId: ID!, daoId: ID!): Membership
@@ -216,6 +237,9 @@ const resolvers = {
     },
     comments: async () => {
       return await getComments();
+    },
+    userById: async (parent: null, args: { id: number }) => {
+      return (await getUserById(args.id)) as User;
     },
     postsByUser: async (parent: null, args: { userId: string }) => {
       const userId = parseInt(args.userId);
@@ -271,6 +295,10 @@ const resolvers = {
       // You need to return something from this function
       return votesData;
     },
+    getPublicPosts: async () => {
+      const posts = await getPublicPosts();
+      return posts;
+    },
     postVoteUser: async (
       parent: null,
       args: { userId: number; postId: number },
@@ -293,8 +321,40 @@ const resolvers = {
       const memberships = await getAllUserMemberships(args.userId);
       return memberships;
     },
-  },
+    votes: async () => {
+      const votes = await getVotes();
+      return votes;
+    },
+    getUserMembershipsFeed: async (parent: null, args: { userId: number }) => {
+      const usersMemberships: Membership[] = await getAllUserMemberships(
+        args.userId,
+      );
 
+      const postsArray: Post[][] = await Promise.all(
+        usersMemberships.map(async (membership) => {
+          if (membership.daoId) {
+            return await getPostsByDaoId(membership.daoId);
+          } else {
+            if (membership.daoId) {
+              return await getPostsByUserId(membership.userSubId as number);
+            } else {
+              return [];
+            }
+          }
+        }),
+      );
+
+      const posts: Post[] = postsArray.flat();
+      return posts;
+    },
+    getAllUserDaoMemberships: async (
+      parent: null,
+      args: { userId: number },
+    ) => {
+      const memberships = await getAllUserDaoMemberships(args.userId);
+      return memberships;
+    },
+  },
   Mutation: {
     registerUser: async (
       parent: null,
@@ -369,27 +429,52 @@ const resolvers = {
     },
     createPost: async (
       parent: null,
-      args: { title: string; body: string; userId: string; daoId: string },
+      args: {
+        title: string;
+        body: string;
+        userId: string;
+        daoId: string;
+        membersOnly: boolean;
+      },
     ) => {
       if (
-        !args.body ||
         !args.title ||
-        !args.userId ||
-        typeof args.userId !== 'string' ||
+        typeof args.title !== 'string' ||
+        !args.body ||
         typeof args.body !== 'string' ||
-        typeof args.title !== 'string'
+        !args.userId ||
+        typeof args.userId !== 'string'
       ) {
+        console.log('membersOnly: ', args.membersOnly);
+        console.log('userId: ', args.userId);
+        console.log('body: ', args.body);
+        console.log('title: ', args.title);
+        console.log('typeof membersOnly: ', typeof args.membersOnly);
+        console.log('typeof userId: ', typeof args.userId);
+        console.log('typeof body: ', typeof args.body);
+        console.log('typeof title: ', typeof args.title);
         throw new GraphQLError('Required field is missing');
       }
-
+      console.log('membersOnly: ', args.membersOnly);
       if (args.daoId) {
         const userId = parseInt(args.userId);
         const daoId = parseInt(args.daoId);
-        return await createPostInDao(args.title, args.body, userId, daoId);
+        return await createPostInDao(
+          args.title,
+          args.body,
+          userId,
+          daoId,
+          args.membersOnly,
+        );
       }
       if (!args.daoId || args.daoId === '0') {
         const userId = parseInt(args.userId);
-        return await createPost(args.title, args.body, userId);
+        return await createPost(
+          args.title,
+          args.body,
+          userId,
+          args.membersOnly,
+        );
       }
     },
 
@@ -504,10 +589,15 @@ const resolvers = {
     },
     addMembership: async (
       parent: null,
-      args: { userId: number; daoId: number },
+      args: { userId: number; daoId: number; subId: number; role: string },
     ) => {
-      await memberPlusOne(args.daoId);
-      return await addMembership(args.userId, args.daoId);
+      if (args.daoId) {
+        await memberPlusOne(args.daoId);
+        return await addMembership(args.userId, args.daoId);
+      }
+      if (args.subId) {
+        return await addMembershipSub(args.userId, args.subId);
+      }
     },
     removeMembership: async (
       parent: null,

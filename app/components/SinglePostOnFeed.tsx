@@ -15,9 +15,6 @@ export default function SinglePost({
   post,
   comments,
 }: SinglePostPageProps) {
-  console.log('user', user);
-  console.log('post', post);
-  console.log('comments', comments);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [showComments, setShowComments] = useState(false);
   if (!user) {

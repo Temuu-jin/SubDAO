@@ -37,7 +37,7 @@ export function ProfilePosts({ userId }: { userId: string }) {
             className="p-4 hover:bg-gray-50 rounded-lg transition-colors duration-200"
           >
             <Link
-              href={`/profile/${post.userId}`}
+              href={`/profile/${post.id}`}
               className="text-blue-600 hover:underline"
             >
               <div className="text-lg font-semibold">{post.title}</div>{' '}

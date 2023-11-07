@@ -103,3 +103,9 @@ export const getVoteForCommentByUser = async (
   `;
   return vote[0] || null;
 };
+
+export const getVotes = async (): Promise<Vote[]> => {
+  const votes = await sql<Vote[]>`
+    SELECT * FROM votes;`;
+  return votes;
+};

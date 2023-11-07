@@ -1,6 +1,5 @@
 'use client';
 import { gql, useMutation } from '@apollo/client';
-import { redirect } from 'next/navigation';
 import { unstable_useCacheRefresh, useState } from 'react';
 
 const joinDaoMutation = gql`

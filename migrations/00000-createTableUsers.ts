@@ -9,7 +9,8 @@ export async function up(sql: Sql) {
     bio text DEFAULT '',
     created_at timestamp DEFAULT NOW(),
     post_count integer DEFAULT 0,
-    comment_count integer DEFAULT 0
+    comment_count integer DEFAULT 0,
+    user_subscriptions integer DEFAULT 0
   );`;
 }
 

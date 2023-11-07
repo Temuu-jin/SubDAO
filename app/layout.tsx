@@ -26,11 +26,11 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <nav className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
-          <div className="text-xl font-bold">Subdapp</div>
+          <div className="text-xl font-bold">SubDAO</div>
           <div className="flex gap-4">
             <Link href="/">Home</Link>
             <Link href="/daos">DAOs</Link>
-            <Link href="/">About</Link>
+            <Link href="/aboutus">About</Link>
           </div>
           <div className="flex gap-4">
             {loggedIn === false ? (

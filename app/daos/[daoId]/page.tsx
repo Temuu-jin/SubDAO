@@ -34,8 +34,7 @@ export default async function SingleDaoPage(props: SingleDaoPageProps) {
     return notFound();
   }
   const userDaoMemberships = await getAllUserMemberships(user.id);
-  console.log('user.id', user.id);
-  console.log('dao.id', dao.id);
+  console.log('userDaoMemberships', userDaoMemberships);
   const member = userDaoMemberships.find(
     (membership) => membership.daoId === dao.id,
   );

@@ -11,6 +11,15 @@ export const addMembership = cache(
     return membership;
   },
 );
+export const addMembershipSub = cache(
+  async (userId: number, subId: number, role: string = 'member') => {
+    const [membership] = await sql<Membership[]>`
+    INSERT INTO memberships (user_id, sub_to_user_id, role)
+    VALUES (${userId}, ${subId}, ${role})
+    RETURNING *`;
+    return membership;
+  },
+);
 
 export const updateMembershipRole = cache(
   async (userId: number, daoId: number, newRole: string) => {
@@ -50,9 +59,23 @@ export const getAllMembersInDao = cache(async (daoId: number) => {
     WHERE dao_id = ${daoId}`;
   return members;
 });
+
 export const getAllUserMemberships = cache(async (userId: number) => {
   const memberships = await sql<Membership[]>`
     SELECT * FROM memberships
     WHERE user_id = ${userId}`;
+  return memberships;
+});
+export const getAllUserDaoMemberships = cache(async (userId: number) => {
+  const memberships = await sql<Membership[]>`
+    SELECT * FROM memberships
+    WHERE user_id = ${userId} AND dao_id IS NOT NULL`;
+  return memberships;
+});
+
+export const getAllUserSubMemberships = cache(async (userId: number) => {
+  const memberships = await sql<Membership[]>`
+    SELECT * FROM memberships
+    WHERE user_id = ${userId} AND sub_to_user_id IS NOT NULL`;
   return memberships;
 });

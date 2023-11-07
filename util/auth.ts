@@ -43,9 +43,7 @@ export type GetUserResponse = {
 export const getUser = async () => {
   const dataString: string = await getParsedCookie().toString();
   const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
-  if (!dataString) {
-    return undefined;
-  }
+
   return user as GetUserResponse;
 };
 

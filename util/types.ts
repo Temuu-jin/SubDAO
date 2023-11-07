@@ -7,7 +7,7 @@ export type User = {
   bio: string;
   postCount: number;
   commentCount: number;
-  daos: number[];
+  userSubs: number;
 };
 
 export type Post = {
@@ -16,6 +16,7 @@ export type Post = {
   body: string;
   userId: number;
   daoId: number;
+  membersOnly: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -54,7 +55,8 @@ export type Vote = {
 };
 export type Membership = {
   userId: number;
-  daoId: number;
+  daoId?: number;
+  userSubId?: number;
   role?: string; // This can be optional if not every membership has a defined role.
   joinedAt: Date;
 };
