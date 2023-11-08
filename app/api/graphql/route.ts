@@ -25,7 +25,7 @@ import {
   memberPlusOne,
 } from '../../../database/daos';
 import {
-  addMembership,
+  addMembershipDao,
   addMembershipSub,
   getAllMembersInDao,
   getAllUserDaoMemberships,
@@ -212,8 +212,8 @@ const typeDefs = gql`
     downvoteComment(userId: ID!, commentId: ID!): Vote
     undoVoteOnPost(userId: ID!, postId: ID!): Boolean
     undoVoteOnComment(userId: ID!, commentId: ID!): Boolean
-    addMembership(userId: ID!, daoId: ID, subId: ID, role: String): Membership
-
+    addMembershipDao(userId: ID!, daoId: ID, role: String): Membership
+    addMembershipSub(userId: ID!, subId: ID, role: String): Membership
     removeMembership(userId: ID!, daoId: ID!): Boolean
     makeAdmin(userId: ID!, daoId: ID!): Membership
     removeAdmin(userId: ID!, daoId: ID!): Membership
@@ -423,7 +423,7 @@ const resolvers = {
         args.description,
         args.userId,
       )) as Dao;
-      await addMembership(parseInt(args.userId), dao.id);
+      await addMembershipDao(parseInt(args.userId), dao.id);
       await makeMemberAdmin(parseInt(args.userId), dao.id);
       return dao;
     },
@@ -524,7 +524,7 @@ const resolvers = {
         throw new GraphQLError('Required field is missing');
       }
       const newDao = await memberPlusOne(parseInt(args.daoId));
-      const newMember = await addMembership(
+      const newMember = await addMembershipDao(
         parseInt(args.userId),
         parseInt(args.daoId),
       );
@@ -587,17 +587,19 @@ const resolvers = {
     ) => {
       return await undoVoteOnComment(args.userId, args.commentId);
     },
-    addMembership: async (
+    addMembershipDao: async (
       parent: null,
-      args: { userId: number; daoId: number; subId: number; role: string },
+      args: { userId: number; daoId: number; role: string },
     ) => {
-      if (args.daoId) {
-        await memberPlusOne(args.daoId);
-        return await addMembership(args.userId, args.daoId);
-      }
-      if (args.subId) {
-        return await addMembershipSub(args.userId, args.subId);
-      }
+      await memberPlusOne(args.daoId);
+      return await addMembershipDao(args.userId, args.daoId);
+    },
+
+    addMembershipSub: async (
+      parent: null,
+      args: { userId: number; subId: number; role: string },
+    ) => {
+      return await addMembershipSub(args.userId, args.subId);
     },
     removeMembership: async (
       parent: null,

@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { Membership } from '../util/types';
 import { sql } from './connect';
 
-export const addMembership = cache(
+export const addMembershipDao = cache(
   async (userId: number, daoId: number, role: string = 'member') => {
     const [membership] = await sql<Membership[]>`
     INSERT INTO memberships (user_id, dao_id, role)
@@ -11,6 +11,7 @@ export const addMembership = cache(
     return membership;
   },
 );
+
 export const addMembershipSub = cache(
   async (userId: number, subId: number, role: string = 'member') => {
     const [membership] = await sql<Membership[]>`

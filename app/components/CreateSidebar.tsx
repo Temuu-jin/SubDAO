@@ -31,7 +31,7 @@ export function CreateSidebar() {
       <h2 className="text-xl font-bold mb-4 w-full text-left">DAOs</h2>
       <ul className="list-none w-full">
         {daos.map((dao) => (
-          <li key={`dao-${dao.id}`} className="mb-2">
+          <li key={`dao-${dao.id}`} className="mb-2 my-4">
             <Link
               href={`/daos/${dao.id}`}
               className="text-blue-600 hover:underline"

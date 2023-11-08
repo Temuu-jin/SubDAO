@@ -55,8 +55,8 @@ export type Vote = {
 };
 export type Membership = {
   userId: number;
-  daoId?: number;
-  userSubId?: number;
+  daoId: number | null;
+  userSubId: number | null;
   role?: string; // This can be optional if not every membership has a defined role.
   joinedAt: Date;
 };

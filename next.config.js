@@ -10,6 +10,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ['i.redd.it'],
+  },
 };
 
 module.exports = nextConfig;

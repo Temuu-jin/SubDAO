@@ -23,32 +23,60 @@ export function ProfilePosts({ userId }: { userId: string }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   const posts: Post[] = data.postsByUser;
+  console.log('posts in publicpostsfeed: ', posts);
   return (
     <div className="bg-white rounded shadow-lg p-4 text-left">
-      {' '}
-      {/* Shadow for depth */}
-      <h2 className="text-xl font-bold mb-4">Posts</h2>
-      <ul className="space-y-4">
+      <h2 className="text-2xl font-bold mb-4 border-b pb-2">Posts</h2>{' '}
+      {/* Add border-bottom to the title */}
+      <ul className="divide-y divide-gray-200">
         {' '}
-        {/* Add space between post items */}
+        {/* Add dividers between posts */}
         {posts.map((post) => (
           <li
-            key={post.id}
-            className="p-4 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            key={`post-${post.id}`}
+            className="p-4 hover:bg-gray-100 rounded-lg transition-colors duration-150"
           >
             <Link
               href={`/profile/${post.id}`}
-              className="text-blue-600 hover:underline"
+              className="flex items-center space-x-2 text-blue-600 hover:underline"
             >
-              <div className="text-lg font-semibold">{post.title}</div>{' '}
+              {/* Flex container for horizontal layout and space between avatar and text */}
+              <div className="flex-shrink-0">
+                {' '}
+                {/* Container for avatar, if you have one */}
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src="/public/images/blank-profile-picture.jpg"
+                  alt=""
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                {' '}
+                {/* Flex item for title and body, ensuring text wrapping */}
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {post.title}
+                </p>{' '}
+                {/* Title with truncation */}
+                <p className="text-sm text-gray-500">{post.body}</p>{' '}
+                {/* Body with gray text */}
+              </div>
             </Link>
-
-            <div className="text-gray-700 mt-1">{post.body}</div>
-            <div className="flex flex-row justify-between mt-2">
-              <div className="text-xs">Created by UserID: {post.userId}</div>
-              {post.daoId ? (
-                <div className="text-xs">DaoID: {post.daoId}</div>
-              ) : null}
+            <div className="mt-2 flex justify-between space-x-4">
+              {' '}
+              {/* Container for metadata and actions */}
+              <div className="flex space-x-1 text-gray-500 text-xs">
+                <span aria-hidden="true">&middot;</span> {/* Separator dot */}
+                <span>{post.userId}</span> {/* UserID */}
+              </div>
+              {post.daoId && (
+                <div className="flex items-center space-x-1">
+                  <div className="text-xs font-medium text-gray-900">
+                    DaoID: {post.daoId}
+                  </div>{' '}
+                  {/* DaoID if exists */}
+                </div>
+              )}
+              {/* Optional icons or actions could go here */}
             </div>
           </li>
         ))}
