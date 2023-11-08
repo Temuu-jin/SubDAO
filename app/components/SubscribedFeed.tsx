@@ -156,15 +156,12 @@ export function SubscribedFeed({ user }: { user: User }) {
                     u/{post.userId}
                   </span>
                 </div>
-                <Link
-                  href={{
-                    pathname: '/post/[postId]',
-                    query: { postId: post.id },
-                  }}
+                <a
+                  href={`/post/${post.id}`}
                   className="text-lg font-semibold text-blue-600 hover:underline"
                 >
                   {post.title}
-                </Link>
+                </a>
                 <p className="text-sm text-gray-500 mt-1">{post.body}</p>
               </div>
             </div>
