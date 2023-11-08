@@ -1,9 +1,6 @@
 import './globals.css';
-import Router from 'next/router';
 import React from 'react';
-import { getUserById } from '../database/users';
 import { checkLogin, getUser } from '../util/auth';
-import { User } from '../util/types';
 import CreateSidebar from './components/CreateSidebar';
 import MainPage from './components/MainPageFeed';
 import { PublicPostsFeed } from './components/PublicPostsFeed';

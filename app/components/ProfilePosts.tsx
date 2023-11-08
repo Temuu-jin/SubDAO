@@ -1,6 +1,7 @@
 'use client';
 
 import { gql, useQuery } from '@apollo/client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Post } from '../../util/types';
 
@@ -25,58 +26,85 @@ export function ProfilePosts({ userId }: { userId: string }) {
   const posts: Post[] = data.postsByUser;
   console.log('posts in publicpostsfeed: ', posts);
   return (
-    <div className="bg-white rounded shadow-lg p-4 text-left">
-      <h2 className="text-2xl font-bold mb-4 border-b pb-2">Posts</h2>{' '}
-      {/* Add border-bottom to the title */}
+    <div className="bg-white rounded-lg shadow-md p-4 text-left">
+      <h2 className="text-xl font-bold mb-4">Posts</h2>
       <ul className="divide-y divide-gray-200">
-        {' '}
-        {/* Add dividers between posts */}
         {posts.map((post) => (
           <li
             key={`post-${post.id}`}
-            className="p-4 hover:bg-gray-100 rounded-lg transition-colors duration-150"
+            className="p-4 hover:bg-gray-100 rounded-lg transition-colors duration-200"
           >
-            <Link
-              href={`/profile/${post.id}`}
-              className="flex items-center space-x-2 text-blue-600 hover:underline"
-            >
-              {/* Flex container for horizontal layout and space between avatar and text */}
-              <div className="flex-shrink-0">
-                {' '}
-                {/* Container for avatar, if you have one */}
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src="/public/images/blank-profile-picture.jpg"
-                  alt=""
+            {/* Post Content */}
+            <div className="flex">
+              {/* Voting Arrows */}
+              <div className="flex flex-col justify-center items-center mr-4 text-gray-400">
+                <button aria-label="upvote">
+                  <svg
+                    className="h-6 w-6 text-gray-500 hover:text-orange-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                </button>
+                <span className="text-xs text-gray-500">Vote</span>
+                <button aria-label="downvote">
+                  <svg
+                    className="h-6 w-6 text-gray-500 hover:text-orange-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-shrink-0 mr-4">
+                <Image
+                  src="https://i.redd.it/75dkc76f6xyb1.jpg"
+                  className="h-20 w-20"
+                  width={200}
+                  height={200}
+                  alt="Post avatar"
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                {' '}
-                {/* Flex item for title and body, ensuring text wrapping */}
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {post.title}
-                </p>{' '}
-                {/* Title with truncation */}
-                <p className="text-sm text-gray-500">{post.body}</p>{' '}
-                {/* Body with gray text */}
-              </div>
-            </Link>
-            <div className="mt-2 flex justify-between space-x-4">
-              {' '}
-              {/* Container for metadata and actions */}
-              <div className="flex space-x-1 text-gray-500 text-xs">
-                <span aria-hidden="true">&middot;</span> {/* Separator dot */}
-                <span>{post.userId}</span> {/* UserID */}
-              </div>
-              {post.daoId && (
-                <div className="flex items-center space-x-1">
-                  <div className="text-xs font-medium text-gray-900">
-                    DaoID: {post.daoId}
-                  </div>{' '}
-                  {/* DaoID if exists */}
+              <div className="flex-grow">
+                <div className="mb-2">
+                  <span className="text-xs font-semibold text-gray-500 uppercase hover:underline">
+                    d/{post.daoId}
+                  </span>
+                  <span className="text-xs text-gray-400"> • </span>
+                  <span className="text-xs font-semibold text-gray-500 hover:underline">
+                    u/{post.userId}
+                  </span>
                 </div>
-              )}
-              {/* Optional icons or actions could go here */}
+                <Link
+                  href={`/post/${post.id}`}
+                  className="text-lg font-semibold text-blue-600 hover:underline"
+                >
+                  {post.title}
+                </Link>
+                <p className="text-sm text-gray-500 mt-1">{post.body}</p>
+              </div>
+            </div>
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center mt-4 text-gray-500 text-xs">
+              <span> Comments</span>
+              <div className="flex space-x-4">
+                <button>Share</button>
+                <button>Save</button>
+              </div>
             </div>
           </li>
         ))}
