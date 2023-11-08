@@ -153,7 +153,7 @@ export default function CreatePostForm({ user }: { user: User }) {
               value={daoId}
               onChange={(e) => setDaoId(parseInt(e.target.value))}
             >
-              <option key={'profilePost'} value={0}>
+              <option key={'profile-post'} value={0}>
                 Post on Profile
               </option>
             </select>
