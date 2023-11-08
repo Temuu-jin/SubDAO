@@ -90,7 +90,10 @@ export function ProfilePosts({ userId }: { userId: string }) {
                   </span>
                 </div>
                 <Link
-                  href={`/post/${post.id}`}
+                  href={{
+                    pathname: '/post/[postId]',
+                    query: { postId: post.id },
+                  }}
                   className="text-lg font-semibold text-blue-600 hover:underline"
                 >
                   {post.title}

@@ -231,7 +231,7 @@ export default function CreatePostForm({ user }: { user: User }) {
             {membershipsWithNames.map((membership: MembershipWithDaoName) => (
               <option
                 key={`membershipDaoID - ${membership.daoId}`}
-                value={membership.daoId}
+                value={membership.daoId?.toString()}
               >
                 {membership.daoName}
               </option>
