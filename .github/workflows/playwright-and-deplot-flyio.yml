@@ -12,7 +12,7 @@ jobs:
       PGPASSWORD: subdao
       PGDATABASE: subdao
       NEXT_PUBLIC_GIT_HUB_API: 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
-      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      NEXT_PUBLIC_BASE_URL: https://subdao.fly.dev
       JWT_SECRET: 5cb39e9c3eacf0c5e7e1c5308b3c0077b8580225cef948520d95881cebbf5ae8125a589e94464bc6f8eca6fae8b0f74bd0f465bcbe67bb3960f49b1be6cd3dbd
       NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: 'djrghgy0j'
     steps:

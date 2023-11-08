@@ -14,6 +14,11 @@ function makeClient() {
     fetchOptions: { cache: 'no-store' },
   });
 
+  const httpLinkFly = new HttpLink({
+    uri: `/api/graphql`,
+    fetchOptions: { cache: 'no-store' },
+  });
+
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(),
     link:
@@ -22,7 +27,7 @@ function makeClient() {
             new SSRMultipartLink({
               stripDefer: true,
             }),
-            httpLink,
+            httpLinkFly,
           ])
         : httpLink,
   });
