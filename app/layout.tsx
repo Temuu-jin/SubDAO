@@ -36,7 +36,7 @@ export default async function RootLayout({
             {loggedIn === false ? (
               <>
                 <Link href="/login">Login</Link>
-                <Link href="/signup" data-test-id="link-signup">
+                <Link href="/signup" data-test-id={`link-signup`}>
                   Signup
                 </Link>
               </>
