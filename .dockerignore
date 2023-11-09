@@ -28,6 +28,7 @@ node_modules
 # Git and GitHub
 .git
 .github
+gitcommands.txt
 
 # Linting, formatting config
 .eslintcache
