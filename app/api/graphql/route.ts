@@ -63,7 +63,8 @@ import {
   upvoteComment,
   upvotePost,
 } from '../../../database/votes';
-import { createSessionToken } from '../../../util/auth';
+import { createRefreshToken, createSessionToken } from '../../../util/auth';
+import { setCookies } from '../../../util/cookies';
 import {
   Dao,
   LoginResponse,
@@ -400,7 +401,9 @@ const resolvers = {
         throw new GraphQLError('No user found');
       }
       const sessionToken = await createSessionToken(user);
-      cookies().set('sessionToken', sessionToken.toString());
+      const refreshToken = await createRefreshToken(user);
+      setCookies(sessionToken, refreshToken);
+
       return { user } as LoginResponse;
     },
     createDao: async (

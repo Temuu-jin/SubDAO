@@ -39,6 +39,10 @@ export type GetUserResponse = {
   username: string;
   email: string;
   createdAt: string;
+  bio: string;
+  postCount: number;
+  commentCount: number;
+  userSubs: number;
 };
 export const getUser = async () => {
   const dataString: string = await getParsedCookie().toString();
@@ -53,6 +57,10 @@ export const createSessionToken = async (user: User) => {
     username: user.username,
     email: user.email,
     createdAt: user.createdAt,
+    bio: user.bio,
+    postCount: user.postCount,
+    commentCount: user.commentCount,
+    userSubs: user.userSubs,
   };
   const options = {
     expiresIn: '1h',
@@ -63,4 +71,20 @@ export const createSessionToken = async (user: User) => {
     options,
   );
   return sessionToken;
+};
+
+export const createRefreshToken = async (user: User) => {
+  const payload = {
+    id: user.id,
+    username: user.username,
+  };
+  const options = {
+    expiresIn: '7d', // Refresh token expires in 7 days
+  };
+  const refreshToken = await jwt.sign(
+    payload,
+    process.env.JWT_SECRET!,
+    options,
+  );
+  return refreshToken;
 };
