@@ -1,6 +1,7 @@
 import {
   ApolloClient,
   ApolloLink,
+  gql,
   HttpLink,
   InMemoryCache,
   split,
