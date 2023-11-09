@@ -5,6 +5,7 @@ set -o errexit
 
 # Set volume path for use in PostgreSQL paths if volume directory exists
 [ -d "../postgres-volume" ] && VOLUME_PATH=/postgres-volume
+echo "Volume path: $VOLUME_PATH"
 
 echo "Creating folders for PostgreSQL and adding permissions for postgres user..."
 mkdir -p $VOLUME_PATH/run/postgresql/data/
@@ -43,6 +44,5 @@ else
     CREATE SCHEMA $PGUSERNAME AUTHORIZATION $PGUSERNAME;
 SQL
 fi
-pnpm migrate down --all
 pnpm migrate up
 ./node_modules/.bin/next start

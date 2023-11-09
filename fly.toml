@@ -1,16 +1,21 @@
+# fly.toml app configuration file generated for subdao on 2023-11-08T16:57:33+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = "subdao"
-primary_region = "otp"
+primary_region = "ams"
 
-# Apps without volume: Comment out the [mounts] configuration below
-[mounts]
-  source = "postgres"
-  destination = "/postgres-volume"
-
-[env]
-  PORT = "8080"
+[build]
 
 [http_service]
-  internal_port = 8080
+  internal_port = 3000
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[mounts]]
+source="vol_zred7zq6o2lymzo4"
+destination="/postgres-volume"
