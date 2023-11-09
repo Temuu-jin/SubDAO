@@ -6,16 +6,18 @@
 app = "subdao"
 primary_region = "otp"
 
-[build]
+primary_region = "otp"
+
+# Apps without volume: Comment out the [mounts] configuration below
+[mounts]
+  source = "postgres"
+  destination = "/postgres-volume"
+
+[env]
+  PORT = "8080"
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ["app"]
-
-[[mounts]]
-source="vol_zred7zq6o2lymzo4"
-destination="/postgres-volume"
