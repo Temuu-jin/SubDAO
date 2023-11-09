@@ -11,7 +11,6 @@ export async function up(sql: Sql) {
     post_count integer DEFAULT 0,
     comment_count integer DEFAULT 0,
     user_subscriptions integer DEFAULT 0
-    dao_subscriptions integer DEFAULT 0
   );`;
 }
 
