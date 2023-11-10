@@ -119,12 +119,12 @@ export function PublicPostsFeed() {
                     u/{post.userId}
                   </span>
                 </div>
-                <Link
+                <a
                   href={`/post/${post.id}`}
                   className="text-lg font-semibold text-blue-600 hover:underline"
                 >
                   {post.title}
-                </Link>
+                </a>
                 <p className="text-sm text-gray-500 mt-1">{post.body}</p>
               </div>
             </div>
