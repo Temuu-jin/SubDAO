@@ -24,34 +24,56 @@ export default async function RootLayout({
   console.log('loggedIn', loggedIn);
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <nav className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
-          <div className="text-xl font-bold">SubDAO</div>
-          <div className="flex gap-4">
-            <Link href="/">Home</Link>
-            <Link href="/daos">DAOs</Link>
-            <Link href="/aboutus">About</Link>
-          </div>
-          <div className="flex gap-4">
-            {loggedIn === false ? (
-              <>
-                <Link href="/login">Login</Link>
-                <Link href="/signup">Signup</Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/profile"
-                  className=" text-white my-1 px-1.5 rounded-md block"
-                >
-                  Profile
-                </Link>
-                <Signout />
-              </>
-            )}
-          </div>
-        </nav>
-        <ApolloClientProvider>{children}</ApolloClientProvider>
+      <body
+        className={`grid xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-12 sm: ${inter.className}`}
+      >
+        <div className="xl:col-span-2 xl:block lg:col-span-1 lg:block md:hidden sm:hidden" />
+        <aside className="xl:col-span-1 lg:col-span-2 md:col-span-2 sm: text-right    p-2 ">
+          <nav>
+            <div className="mb-10">
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 30 30"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="15" cy="15" r="15" fill="#D9D9D9" />
+              </svg>
+            </div>
+
+            <div className="flex flex-col text-left gap-10">
+              {loggedIn === false ? (
+                <>
+                  <Link href="/">Home</Link>
+
+                  <Link href="/daos">DAOs</Link>
+                  <Link href="/aboutus">About</Link>
+                  <div className="absolute bottom-8 flex flex-col gap-2">
+                    <Link href="/login">Login</Link>
+                    <Link href="/signup">Signup</Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link href="/">Home</Link>
+                  <Link href="/profile" className=" text-white  block">
+                    Profile
+                  </Link>
+                  <Link href="/daos">DAOs</Link>
+                  <Link href="/aboutus">About</Link>
+                  <div className="fixed bottom-8">
+                    <Signout />
+                  </div>
+                </>
+              )}
+            </div>
+          </nav>
+        </aside>
+        <div className="xl:col-span-7 lg:col-span-7 md:col-span-9 sm:">
+          <ApolloClientProvider>{children}</ApolloClientProvider>
+        </div>
+        <div className=" xl:col-span-2 xl:block lg:col-span-2 lg:block md:col-span-1 md:block sm:hidden" />
       </body>
     </html>
   );

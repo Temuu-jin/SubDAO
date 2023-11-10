@@ -11,7 +11,7 @@ export default function Signout() {
         await logout();
         await router.refresh();
       }}
-      className="bg-red-600 text-white my-1 px-1.5 rounded-md hover:bg-red-700 block"
+      className="bg-red-600 text-white rounded-md hover:bg-red-700 block text-left"
     >
       Signout
     </button>
