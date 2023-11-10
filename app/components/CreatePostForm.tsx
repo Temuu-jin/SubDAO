@@ -138,83 +138,6 @@ export default function CreatePostForm({ user }: { user: User }) {
     );
   }
 
-<<<<<<< HEAD
-  if (membershipsWithNames.length === 0 || !membershipsWithNames) {
-    return (
-      <div className="bg-white rounded shadow p-4">
-        <h2 className="text-xl font-bold mb-2">Create Post</h2>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await createPost();
-          }}
-        >
-          <div className="mb-4">
-            <select
-              value={daoId}
-              onChange={(e) => setDaoId(parseInt(e.target.value))}
-            >
-              <option key={'profile-post'} value={0}>
-                Post on Profile
-              </option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Title
-            </label>
-            <input
-              title="title"
-              value={title}
-              onChange={(event) => setTitle(event.currentTarget.value)}
-              placeholder="Title"
-              className="mt-1 p-2 w-full border rounded-md"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="body"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Content
-            </label>
-            <textarea
-              title="body"
-              value={body}
-              onChange={(event) => setBody(event.currentTarget.value)}
-              placeholder="Content..."
-              className="mt-1 p-2 w-full border rounded-md"
-              required
-            />
-          </div>
-
-          <div className="flex justify-between items-center mt-2">
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-blue-600 rounded-full"
-                checked={membersOnly}
-                onChange={(event) =>
-                  setMembersOnly(event.currentTarget.checked)
-                }
-              />
-              <span className="text-gray-700 font-medium">Members Only</span>
-            </label>
-
-            <button className="bg-blue-600 text-white rounded-full px-8 py-2 hover:bg-blue-700 transition-colors duration-200">
-              Post
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-=======
->>>>>>> dev
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <form
@@ -224,24 +147,6 @@ export default function CreatePostForm({ user }: { user: User }) {
         }}
         className="flex flex-col space-y-2"
       >
-<<<<<<< HEAD
-        <div>
-          <select
-            value={daoId}
-            onChange={(e) => setDaoId(parseInt(e.target.value))}
-            className="form-select block w-full px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" // Adjusted focus ring color
-          >
-            <option value={0}>Post on Profile</option>
-            {membershipsWithNames.map((membership: MembershipWithDaoName) => (
-              <option
-                key={`membershipDaoID - ${membership.daoId}`}
-                value={membership.daoId?.toString()}
-              >
-                {membership.daoName}
-              </option>
-            ))}
-          </select>
-=======
         <div className="flex flex-row">
           <div>
             <svg
@@ -281,7 +186,6 @@ export default function CreatePostForm({ user }: { user: User }) {
               ))}
             </select>
           )}
->>>>>>> dev
         </div>
         <div>
           <input

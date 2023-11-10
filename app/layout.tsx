@@ -24,38 +24,6 @@ export default async function RootLayout({
   console.log('loggedIn', loggedIn);
   return (
     <html lang="en">
-<<<<<<< HEAD
-      <body className={inter.className}>
-        <nav className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
-          <div className="text-xl font-bold">SubDAO</div>
-          <div className="flex gap-4">
-            <Link href="/">Home</Link>
-            <Link href="/daos">DAOs</Link>
-            <Link href="/aboutus">About</Link>
-          </div>
-          <div className="flex gap-4">
-            {loggedIn === false ? (
-              <>
-                <Link href="/login">Login</Link>
-                <Link href="/signup" data-test-id={`link-signup`}>
-                  Signup
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/profile"
-                  className=" text-white my-1 px-1.5 rounded-md block"
-                >
-                  Profile
-                </Link>
-                <Signout />
-              </>
-            )}
-          </div>
-        </nav>
-        <ApolloClientProvider>{children}</ApolloClientProvider>
-=======
       <body
         className={`grid xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-12 sm: ${inter.className}`}
       >
@@ -108,7 +76,6 @@ export default async function RootLayout({
           <ApolloClientProvider>{children}</ApolloClientProvider>
         </div>
         <div className=" xl:col-span-2 xl:block lg:col-span-2 lg:block md:col-span-1 md:block sm:hidden" />
->>>>>>> dev
       </body>
     </html>
   );
