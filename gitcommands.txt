@@ -1,0 +1,16 @@
+create dev branch and go there:
+git checkout -b dev
+
+commit and merge into master:
+  Commit your changes on the dev branch:
+  git add .
+  git commit -m "Your commit message"
+
+  Switch to the master branch:
+  git checkout master
+
+  Merge the dev branch into the master branch:
+  git merge dev
+
+  If you want to push these changes to a remote repository:
+  git push origin master

@@ -1,6 +1,6 @@
 'use client';
 import { gql, useQuery } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User } from '../../util/types';
 import CreatePostForm from './CreatePostForm';
 import CreateSidebar from './CreateSidebar';
@@ -34,15 +34,33 @@ export default function MainPage({ userId }: { userId: string }) {
     pollInterval: 5000,
   });
 
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isFixed, setIsFixed] = useState(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+    if (scrollPosition > 100) {
+      // adjust this value as needed
+      setIsExpanded(false);
+      setIsFixed(true);
+    } else {
+      setIsExpanded(true);
+      setIsFixed(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   // State to track the active tab
   const [activeTab, setActiveTab] = useState('Public');
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :{error.message}</p>;
 
   const user: User = data.userById;
-  const handleTab = (tab: string) => {
-    setActiveTab(tab);
-  };
 
   // Function to render the appropriate PostsFeed based on the active tab
   const renderPostsFeed = () => {
@@ -65,74 +83,83 @@ export default function MainPage({ userId }: { userId: string }) {
   };
   if (!user) {
     return (
-      <main className="bg-gray-100 min-h-screen p-4">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex gap-8">
-            <div className="flex flex-col w-3/5 space-y-6">
-              {/* Tab Bar */}
-              <div className="bg-white rounded-lg shadow-md mb-4 p-4 flex justify-between text-gray-500">
-                {[
-                  'Subscribed',
-                  'DAO Subscription',
-                  'User Subscriptions',
-                  'Public',
-                ].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`font-medium text-sm ${
-                      activeTab === tab ? 'text-blue-600' : ''
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
-              {/* PostsFeed Components */} {renderPostsFeed()}
-            </div>
-            <div className="w-2/5">
-              {/* Sidebar Component */}
-              <CreateSidebar />{' '}
-            </div>
+      <main className=" min-h-screen p-4">
+        <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
+          {/* Tab Bar */}
+          <div className="bg-white  mb-4  text-gray-500">
+            {[
+              'Subscribed',
+              'DAO Subscription',
+              'User Subscriptions',
+              'Public',
+            ].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`font-medium text-sm ${
+                  activeTab === tab ? 'text-blue-600' : ''
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
           </div>
+          {/* PostsFeed Components */} {renderPostsFeed()}
         </div>
       </main>
     );
   }
   return (
-    <main className="bg-gray-100 min-h-screen p-4">
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex gap-8">
-          <div className="flex flex-col w-3/5 space-y-6">
+    <main className="grid grid-cols-7 w-[100%] px-4">
+      <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
+        {isFixed === false ? (
+          <div>
             <CreatePostForm user={user as User} />
+          </div>
+        ) : (
+          <div className={`py-4 `}>
+            {isExpanded ? (
+              <>
+                <button onClick={() => setIsExpanded(false)}>x</button>
+                <CreatePostForm user={user as User} />
+              </>
+            ) : (
+              <div
+                onClick={() => setIsExpanded(true)}
+                onKeyPress={() => setIsExpanded(true)}
+                role="button"
+                tabIndex={0}
+              >
+                Create a post...
+              </div>
+            )}
+          </div>
+        )}
 
-            {/* Tab Bar */}
-            <div className="bg-white rounded-lg shadow-md mb-4 p-4 flex justify-between text-gray-500">
-              {[
-                'Subscribed',
-                'DAO Subscription',
-                'User Subscriptions',
-                'Public',
-              ].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`font-medium text-sm ${
-                    activeTab === tab ? 'text-blue-600' : ''
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-            {/* PostsFeed Components */}
-            {renderPostsFeed()}
-          </div>
-          <div className="w-2/5">
-            {/* Sidebar Component */}
-            <CreateSidebar />{' '}
-          </div>
+        <div className="bg-white  mb-4    text-gray-500">
+          {[
+            'Subscribed',
+            'DAO Subscription',
+            'User Subscriptions',
+            'Public',
+          ].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`font-medium text-sm ${
+                activeTab === tab ? 'text-blue-600' : ''
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+
+          {/* PostsFeed Components */}
+          {renderPostsFeed()}
         </div>
+      </div>
+      <div className="xl:col-span-2 xl:block lg:hidden md:hidden sm:hidden min-h-full px-4">
+        <CreateSidebar />
       </div>
     </main>
   );

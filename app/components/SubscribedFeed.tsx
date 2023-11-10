@@ -93,9 +93,9 @@ export function SubscribedFeed({ user }: { user: User }) {
   const posts: Post[] = membersPrivatePosts;
   console.log('posts in subscribedfeed: ', posts);
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 text-left">
-      <h2 className="text-xl font-bold mb-4">Posts</h2>
-      <ul className="divide-y divide-gray-200">
+    <div className="bg-white  text-left">
+      <h2 className="text-xl font-bold mb-4 ">Posts</h2>
+      <ul className="divide-y divide-gray-200 border border-[#d9d9d9]">
         {posts.map((post) => (
           <li
             key={`post-${post.id}`}

@@ -27,8 +27,8 @@ export default function JoinDaoButton({
   const [onError, setOnError] = useState('');
   const [joinDao] = useMutation(joinDaoMutation, {
     variables: {
-      userId: userId,
-      daoId: daoId,
+      userId,
+      daoId,
     },
     onError: (error) => {
       setOnError(error.message);
@@ -46,7 +46,7 @@ export default function JoinDaoButton({
         await joinDao();
       }}
     >
-      <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+      <button className="bg-[#d900fa] text-white px-3 py-1 rounded hover:bg-[#9A00FA]">
         Join DAO
       </button>
     </form>

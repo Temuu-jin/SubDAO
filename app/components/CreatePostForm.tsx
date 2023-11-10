@@ -138,6 +138,7 @@ export default function CreatePostForm({ user }: { user: User }) {
     );
   }
 
+<<<<<<< HEAD
   if (membershipsWithNames.length === 0 || !membershipsWithNames) {
     return (
       <div className="bg-white rounded shadow p-4">
@@ -212,6 +213,8 @@ export default function CreatePostForm({ user }: { user: User }) {
       </div>
     );
   }
+=======
+>>>>>>> dev
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <form
@@ -221,6 +224,7 @@ export default function CreatePostForm({ user }: { user: User }) {
         }}
         className="flex flex-col space-y-2"
       >
+<<<<<<< HEAD
         <div>
           <select
             value={daoId}
@@ -237,6 +241,47 @@ export default function CreatePostForm({ user }: { user: User }) {
               </option>
             ))}
           </select>
+=======
+        <div className="flex flex-row">
+          <div>
+            <svg
+              width="37"
+              height="36"
+              viewBox="0 0 37 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <ellipse
+                cx="18.8641"
+                cy="17.7345"
+                rx="18.0283"
+                ry="17.3894"
+                fill="#D9D9D9"
+              />
+            </svg>
+          </div>
+          {membershipsWithNames.length < 1 || !membershipsWithNames ? (
+            <div className="form-select block w-full px-4 py-2 bg-white  text-gray-700 ">
+              /p/{user.username}
+            </div>
+          ) : (
+            <select
+              value={daoId}
+              onChange={(e) => setDaoId(parseInt(e.target.value))}
+              className="form-select block w-full px-4 py-2 bg-white text-gray-700 " // Adjusted focus ring color
+            >
+              <option value={0}> /p/{user.username}</option>
+              {membershipsWithNames.map((membership: MembershipWithDaoName) => (
+                <option
+                  key={`membershipDaoID - ${membership.daoId}`}
+                  value={membership.daoId || 0}
+                >
+                  /d/{membership.daoName}
+                </option>
+              ))}
+            </select>
+          )}
+>>>>>>> dev
         </div>
         <div>
           <input
@@ -270,7 +315,7 @@ export default function CreatePostForm({ user }: { user: User }) {
             <span className="text-gray-700 font-medium">Members Only</span>
           </label>
 
-          <button className="bg-blue-600 text-white rounded-full px-8 py-2 hover:bg-blue-700 transition-colors duration-200">
+          <button className="bg-gradient-to-r from-ePurple to-eViolet text-white rounded-full px-8 py-2 hover:bg-[#9A00FA] transition-colors duration-200">
             Post
           </button>
         </div>
