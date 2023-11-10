@@ -51,7 +51,9 @@ export default async function RootLayout({
                   <Link href="/aboutus">About</Link>
                   <div className="absolute bottom-8 flex flex-col gap-2">
                     <Link href="/login">Login</Link>
-                    <Link href="/signup">Signup</Link>
+                    <Link href="/signup" data-test-id="link-signup">
+                      Signup
+                    </Link>
                   </div>
                 </>
               ) : (

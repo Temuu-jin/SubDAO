@@ -39,6 +39,7 @@
     "tsm": "^2.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.39.0",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
