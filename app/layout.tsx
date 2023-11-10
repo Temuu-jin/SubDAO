@@ -2,7 +2,15 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
+import Image from 'next/image';
 import Link from 'next/link';
+import daos from '../public/DAOs.svg';
+import home from '../public/home.svg';
+import messagesIcon from '../public/messagesIcon.svg';
+import moreIcon from '../public/moreIcon.svg';
+import notificationsIcon from '../public/notificationsIcon.svg';
+import profileIcon from '../public/profileIcon.svg';
+import searchIcon from '../public/searchIcon.svg';
 import { checkLogin } from '../util/auth';
 import { ApolloClientProvider } from './ApolloClientProvider';
 import Signout from './components/Signout.js';
@@ -41,38 +49,87 @@ export default async function RootLayout({
                 <circle cx="15" cy="15" r="15" fill="#D9D9D9" />
               </svg>
             </div>
+            <div className="">
+              <div className="fixed flex flex-col text-left gap-10">
+                {loggedIn === false ? (
+                  <>
+                    <div className="flex flex-row gap-4">
+                      <Image src={home} width={20} height={20} alt="home-svg" />
 
-            <div className="flex flex-col text-left gap-10">
-              {loggedIn === false ? (
-                <>
-                  <Link href="/">Home</Link>
+                      <Link href="/">Home</Link>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                      <Image src={daos} width={20} height={20} alt="daos-svg" />
+                      <Link href="/daos">DAOs</Link>
+                    </div>
 
-                  <Link href="/daos">DAOs</Link>
-                  <Link href="/aboutus">About</Link>
-                  <div className="absolute bottom-8 flex flex-col gap-2">
-                    <Link href="/login">Login</Link>
-                    <Link href="/signup" data-test-id="link-signup">
-                      Signup
+                    <Link href="/aboutus">About</Link>
+                    <div className="  flex flex-col gap-2">
+                      <Link href="/login">Login</Link>
+                      <Link href="/signup" data-test-id="link-signup">
+                        Signup
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/" className="flex flex-row gap-4">
+                      <Image src={home} width={20} height={20} alt="home-svg" />
+                      <div>Home</div>
                     </Link>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Link href="/">Home</Link>
-                  <Link href="/profile" className=" text-white  block">
-                    Profile
-                  </Link>
-                  <Link href="/daos">DAOs</Link>
-                  <Link href="/aboutus">About</Link>
-                  <div className="fixed bottom-8">
-                    <Signout />
-                  </div>
-                </>
-              )}
+
+                    <Link href="/daos" className="flex flex-row gap-4">
+                      <Image src={daos} width={20} height={20} alt="daos-svg" />
+                      <div>DAOs</div>
+                    </Link>
+                    <div className="flex flex-row gap-4">
+                      <Image
+                        src={notificationsIcon}
+                        width={20}
+                        height={20}
+                        alt="home-svg"
+                      />
+                      <span>Notifications</span>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                      <Image
+                        src={messagesIcon}
+                        width={20}
+                        height={20}
+                        alt="home-svg"
+                      />
+                      <span>Messages</span>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                      <Image
+                        src={profileIcon}
+                        width={20}
+                        height={20}
+                        alt="home-svg"
+                      />
+                      <Link href="/profile" className=" text-white  block">
+                        Profile
+                      </Link>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                      <Image
+                        src={moreIcon}
+                        width={20}
+                        height={20}
+                        alt="home-svg"
+                      />
+                      <span>More</span>
+                    </div>
+                    <div className="fixed bottom-8">
+                      <Signout />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </nav>
         </aside>
-        <div className="xl:col-span-7 lg:col-span-7 md:col-span-9 sm:">
+        <div className="ml-4 xl:col-span-7 lg:col-span-7 md:col-span-9 sm:  ">
           <ApolloClientProvider>{children}</ApolloClientProvider>
         </div>
         <div className=" xl:col-span-2 xl:block lg:col-span-2 lg:block md:col-span-1 md:block sm:hidden" />

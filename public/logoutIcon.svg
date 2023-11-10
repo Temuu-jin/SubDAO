@@ -1,0 +1,11 @@
+<svg
+  width="24px"
+  height="24px"
+  viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Box part of the icon -->
+  <path d="M10,2 H6 C4.9,2 4,2.9 4,4 V20 C4,21.1 4.9,22 6,22 H10" stroke="#CC00FA" stroke-width="2" fill="none"/>
+  <!-- Arrow part of the icon -->
+  <path d="M20,12 L10,12 M15,7 L20,12 L15,17" stroke="#CC00FA" stroke-width="2" fill="none"/>
+</svg>

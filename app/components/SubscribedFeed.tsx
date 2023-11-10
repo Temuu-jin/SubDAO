@@ -93,13 +93,12 @@ export function SubscribedFeed({ user }: { user: User }) {
   const posts: Post[] = membersPrivatePosts;
   console.log('posts in subscribedfeed: ', posts);
   return (
-    <div className="bg-white  text-left">
-      <h2 className="text-xl font-bold mb-4 ">Posts</h2>
+    <div className="  text-left">
       <ul className="divide-y divide-gray-200 border border-[#d9d9d9]">
         {posts.map((post) => (
           <li
             key={`post-${post.id}`}
-            className="p-4 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            className="p-4 hover:bg-gray-100 rounded-lg transition-colors duration-200 "
           >
             {/* Post Content */}
             <div className="flex">
@@ -140,7 +139,7 @@ export function SubscribedFeed({ user }: { user: User }) {
               <div className="flex-shrink-0 mr-4">
                 <Image
                   src="https://i.redd.it/75dkc76f6xyb1.jpg"
-                  className="h-20 w-20"
+                  className="h-20 w-20 pt-5"
                   width={200}
                   height={200}
                   alt="Post avatar"

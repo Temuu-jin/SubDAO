@@ -139,7 +139,7 @@ export default function CreatePostForm({ user }: { user: User }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
+    <div className="bg-white border border-grey p-4">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -148,7 +148,7 @@ export default function CreatePostForm({ user }: { user: User }) {
         className="flex flex-col space-y-2"
       >
         <div className="flex flex-row">
-          <div>
+          <div className="mr-4">
             <svg
               width="37"
               height="36"
@@ -166,14 +166,14 @@ export default function CreatePostForm({ user }: { user: User }) {
             </svg>
           </div>
           {membershipsWithNames.length < 1 || !membershipsWithNames ? (
-            <div className="form-select block w-full px-4 py-2 bg-white  text-gray-700 ">
+            <div className="form-select block w-full px-4 py-2 bg-white   ">
               /p/{user.username}
             </div>
           ) : (
             <select
               value={daoId}
               onChange={(e) => setDaoId(parseInt(e.target.value))}
-              className="form-select block w-full px-4 py-2 bg-white text-gray-700 " // Adjusted focus ring color
+              className=" w-full px-4 py-2 bg-white border rounded-full focus:outline-none  focus:border-solanaPurple"
             >
               <option value={0}> /p/{user.username}</option>
               {membershipsWithNames.map((membership: MembershipWithDaoName) => (
@@ -193,7 +193,7 @@ export default function CreatePostForm({ user }: { user: User }) {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="What's happening?"
-            className="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-full text-gray-700 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-4 py-1 bg-gray-50 border rounded-full text-gray-700 focus:outline-none  focus:border-solanaPurple"
             required
           />
         </div>
@@ -203,7 +203,7 @@ export default function CreatePostForm({ user }: { user: User }) {
             value={body}
             onChange={(event) => setBody(event.currentTarget.value)}
             placeholder="Content..."
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-2xl text-gray-700 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 bg-gray-50 border rounded-2xl text-gray-700  focus:outline-none  focus:border-solanaPurple"
             required
           />
         </div>

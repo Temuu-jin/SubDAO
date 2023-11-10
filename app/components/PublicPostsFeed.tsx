@@ -3,7 +3,8 @@
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Post, Vote } from '../../util/types';
+import { use } from 'react';
+import { Dao, Post, User, Vote } from '../../util/types';
 
 const getPublicPostsQuery = gql`
   query GetPublicPosts {
@@ -30,6 +31,24 @@ const getAllVotesQuery = gql`
   }
 `;
 
+const getUsersQuery = gql`
+  query GetUsers {
+    users {
+      id
+      username
+    }
+  }
+`;
+
+const getDaosQuery = gql`
+  query GetDaos {
+    daos {
+      id
+      name
+    }
+  }
+`;
+
 export function PublicPostsFeed() {
   const {
     data: dataPosts,
@@ -43,6 +62,24 @@ export function PublicPostsFeed() {
     error: errorVotes,
   } = useQuery(getAllVotesQuery, { pollInterval: 500 });
 
+  const {
+    data: dataUsers,
+    loading: loadingUsers,
+    error: errorUsers,
+  } = useQuery(getUsersQuery, { pollInterval: 5000 });
+
+  const {
+    data: dataDaos,
+    loading: loadingDaos,
+    error: errorDaos,
+  } = useQuery(getDaosQuery, { pollInterval: 5000 });
+
+  if (loadingDaos) return <div>Loading...</div>;
+  if (errorDaos) return <div>Error: {errorDaos.message}</div>;
+
+  if (loadingUsers) return <div>Loading...</div>;
+  if (errorUsers) return <div>Error: {errorUsers.message}</div>;
+
   if (loadingPosts) return <div>Loading...</div>;
   if (errorPosts) return <div>Error: {errorPosts.message}</div>;
 
@@ -50,20 +87,21 @@ export function PublicPostsFeed() {
   if (errorVotes) return <div>Error: {errorVotes.message}</div>;
 
   const posts: Post[] = dataPosts.getPublicPosts;
+  const users: User[] = dataUsers.users;
+  const daos: Dao[] = dataDaos.daos;
+  !daos ? console.log('No DAOs') : null;
+  !users ? console.log('No Users') : null;
   const votes: Vote[] = dataVotes.votes;
-
+  console.log('daos: ', daos);
   return (
-    <div className="bg-white  text-left">
-      <h2 className="text-xl font-bold mb-4">Posts</h2>
-      <ul className="divide-y border border-[#d9d9d9] divide-gray-200">
+    <div className="text-left">
+      <ul className="divide-y divide-gray-200 ">
         {posts.map((post) => (
           <li
             key={`post-${post.id}`}
-            className="p-4 hover:bg-gray-100  transition-colors duration-200"
+            className="p-4 hover:bg-gray-100  transition-colors duration-200 border border-[#d9d9d9] mb-4"
           >
-            {/* Post Content */}
             <div className="flex">
-              {/* Voting Arrows */}
               <div className="flex flex-col justify-center items-center mr-4 text-gray-400">
                 <button aria-label="upvote">
                   <svg
@@ -97,7 +135,7 @@ export function PublicPostsFeed() {
                   </svg>
                 </button>
               </div>
-              <div className="flex-shrink-0 mr-4">
+              <div className="flex-shrink-0 mr-4 pt-5">
                 <Image
                   src="https://i.redd.it/75dkc76f6xyb1.jpg"
                   className="h-20 w-20"
@@ -107,16 +145,16 @@ export function PublicPostsFeed() {
                 />
               </div>
               <div className="flex-grow">
-                <div className="mb-2">
+                <div className="">
                   {post.daoId > 0 ? (
-                    <span className="text-xs font-semibold text-gray-500 uppercase hover:underline">
-                      d/{post.daoId}
+                    <span className="text-xs font-semibold text-gray-500 hover:underline">
+                      d/{daos.find((dao) => dao.id === post.daoId)?.name}
                       <span className="text-xs text-gray-400"> • </span>
                     </span>
                   ) : null}
 
                   <span className="text-xs font-semibold text-gray-500 hover:underline">
-                    u/{post.userId}
+                    u/{users.find((user) => user.id === post.userId)?.username}
                   </span>
                 </div>
                 <a

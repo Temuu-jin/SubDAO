@@ -14,6 +14,7 @@ module.exports = {
       solanaGreen: '#14F195',
       ePurple: '#CC00FA',
       eViolet: '#9A00FA',
+      grey: '#D9D9D9',
     },
     screens: {
       sm: '320px',

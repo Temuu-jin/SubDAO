@@ -25,7 +25,7 @@ export function CreateSidebar() {
       <h2 className="text-xl font-bold mb-4 w-full text-left">DAOs</h2>
       <Link
         href="/createdao"
-        className="mt-4 text-white bg-blue-600 hover:bg-blue-700 font-medium py-2 px-4 rounded-full w-full text-center transition duration-300 ease-in-out"
+        className="mt-1 text-white bg-blue-600  text-sm py-2 px-4 rounded-full w-full text-center transition duration-300 ease-in-out border rounded-full p-4 hover:border-solanaPurple"
       >
         Create DAO
       </Link>

@@ -39,13 +39,15 @@ export default function MainPage({ userId }: { userId: string }) {
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-    if (scrollPosition > 100) {
+    if (scrollPosition > 200) {
       // adjust this value as needed
       setIsExpanded(false);
       setIsFixed(true);
+      console.log('isExpanded > 10: ', isExpanded);
     } else {
       setIsExpanded(true);
       setIsFixed(false);
+      console.log('isExpanded: ', isExpanded);
     }
   };
 
@@ -86,7 +88,7 @@ export default function MainPage({ userId }: { userId: string }) {
       <main className=" min-h-screen p-4">
         <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
           {/* Tab Bar */}
-          <div className="bg-white  mb-4  text-gray-500">
+          <div className="flex flex-row justify-between bg-white h-40 mb-4  text-gray-500">
             {[
               'Subscribed',
               'DAO Subscription',
@@ -96,7 +98,7 @@ export default function MainPage({ userId }: { userId: string }) {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`font-medium text-sm ${
+                className={`flex font-medium text-sm ${
                   activeTab === tab ? 'text-blue-600' : ''
                 }`}
               >
@@ -110,25 +112,26 @@ export default function MainPage({ userId }: { userId: string }) {
     );
   }
   return (
-    <main className="grid grid-cols-7 w-[100%] px-4">
+    <main className="grid grid-cols-7 w-[100%] px-4 py-4">
       <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
         {isFixed === false ? (
           <div>
             <CreatePostForm user={user as User} />
           </div>
         ) : (
-          <div className={`py-4 `}>
+          <div>
             {isExpanded ? (
-              <>
+              <div>
                 <button onClick={() => setIsExpanded(false)}>x</button>
                 <CreatePostForm user={user as User} />
-              </>
+              </div>
             ) : (
               <div
                 onClick={() => setIsExpanded(true)}
                 onKeyPress={() => setIsExpanded(true)}
                 role="button"
                 tabIndex={0}
+                className="sticky top-0 p-4"
               >
                 Create a post...
               </div>
@@ -136,7 +139,7 @@ export default function MainPage({ userId }: { userId: string }) {
           </div>
         )}
 
-        <div className="bg-white  mb-4    text-gray-500">
+        <div className="flex h-12 justify-center gap-6 mt-2 mb-0">
           {[
             'Subscribed',
             'DAO Subscription',
@@ -146,17 +149,16 @@ export default function MainPage({ userId }: { userId: string }) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`font-medium text-sm ${
-                activeTab === tab ? 'text-blue-600' : ''
+              className={`font-medium text-sm border border-grey rounded-t-xl border-b-0 px-2 ${
+                activeTab === tab ? 'bg-grey' : ''
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
-
-          {/* PostsFeed Components */}
-          {renderPostsFeed()}
         </div>
+        {/* PostsFeed Components */}
+        {renderPostsFeed()}
       </div>
       <div className="xl:col-span-2 xl:block lg:hidden md:hidden sm:hidden min-h-full px-4">
         <CreateSidebar />
