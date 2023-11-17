@@ -47,13 +47,13 @@ export default function CreateCommentForm({
   });
 
   return (
-    <div className="bg-white   max-w-lg ">
+    <div className="bg-white">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           await createComment();
         }}
-        className="flex flex-row"
+        className=""
       >
         <div className="">
           <input
@@ -61,13 +61,10 @@ export default function CreateCommentForm({
             value={body}
             onChange={(event) => setBody(event.currentTarget.value)}
             placeholder="Comment..."
-            className="mt-1 p-1 w-full border rounded-md text-xs"
+            className="mt-1 p-1 w-3/4 border rounded-md text-xs"
             required
           />
-        </div>
-
-        <div className="flex justify-center">
-          <button className="ml-2 w-full bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full text-xs mt-1 py-1 px-2">
+          <button className="ml-2 w-1/5 bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full text-xs mt-1 py-1 px-2">
             Comment
           </button>
         </div>
