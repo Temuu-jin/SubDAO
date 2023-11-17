@@ -10,7 +10,7 @@ export default async function Home() {
   if (loggedIn === true) {
     const userToken = await getUser();
 
-    return <MainPage userId={userToken.id} />;
+    return <MainPage loggedUser={userToken} />;
   }
 
   return <PublicPostsFeed />;

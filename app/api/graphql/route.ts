@@ -4,10 +4,7 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
-import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import { type } from 'os';
-import { as } from 'pg-promise';
 import {
   createComment,
   createCommentInComment,
@@ -38,10 +35,12 @@ import {
   createPost,
   createPostInDao,
   deletePost,
+  getAllPostsWithCommentsAndVotes,
   getPosts,
   getPostsByDaoId,
   getPostsByUserId,
   getPublicPosts,
+  getPublicPostsWithCommentsAndVotes,
 } from '../../../database/posts';
 import {
   createUser,
@@ -99,7 +98,8 @@ const typeDefs = gql`
     body: String!
     userId: ID!
     daoId: ID
-    user: User
+    username: String
+    daoName: String
     membersOnly: Boolean!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -113,8 +113,8 @@ const typeDefs = gql`
     postId: ID!
     commentId: ID
     post: Post
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type Dao {
@@ -153,6 +153,21 @@ const typeDefs = gql`
     commentId: ID
   }
 
+  type PostWithCommentsAndVotes {
+    id: ID!
+    title: String!
+    body: String!
+    userId: ID!
+    daoId: ID
+    membersOnly: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    user: User
+    comments: [Comment]
+    votes: [Vote]
+    dao: Dao
+  }
+
   type Query {
     users: [User!]!
     user(id: ID!): User!
@@ -177,7 +192,8 @@ const typeDefs = gql`
     getUserMembershipsFeed(userId: ID!): [Post!]!
     userById(id: ID!): User!
     getAllUserDaoMemberships(userId: ID!): [Membership]
-    getPublicPosts: [Post!]!
+    postsWithCommentsAndVotes: [PostWithCommentsAndVotes]
+    publicPostsWithCommentsAndVotes: [PostWithCommentsAndVotes]
   }
 
   type Mutation {
@@ -232,6 +248,12 @@ const resolvers = {
     },
     posts: async () => {
       return await getPosts();
+    },
+    postsWithCommentsAndVotes: async () => {
+      return await getAllPostsWithCommentsAndVotes();
+    },
+    publicPostsWithCommentsAndVotes: async () => {
+      return await getPublicPostsWithCommentsAndVotes();
     },
     daos: async () => {
       return await getDaos();
@@ -296,10 +318,7 @@ const resolvers = {
       // You need to return something from this function
       return votesData;
     },
-    getPublicPosts: async () => {
-      const posts = await getPublicPosts();
-      return posts;
-    },
+
     postVoteUser: async (
       parent: null,
       args: { userId: number; postId: number },

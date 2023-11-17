@@ -90,7 +90,7 @@ export function ProfilePosts({ userId }: { userId: string }) {
                   </span>
                 </div>
                 <a
-                  href={`/post/${post.id}`}
+                  href={`/posts/${post.id}`}
                   className="text-lg font-semibold text-blue-600 hover:underline"
                 >
                   {post.title}

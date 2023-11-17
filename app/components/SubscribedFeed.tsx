@@ -3,6 +3,7 @@
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GetUserResponse } from '../../util/auth';
 import { Membership, Post, User } from '../../util/types';
 
 // Feed of Posts that are Members Only and you are a Member of
@@ -44,7 +45,7 @@ const getAllVotesQuery = gql`
   }
 `;
 
-export function SubscribedFeed({ user }: { user: User }) {
+export function SubscribedFeed({ user }: { user: GetUserResponse }) {
   const {
     data: dataPosts,
     loading: loadingPosts,
@@ -156,7 +157,7 @@ export function SubscribedFeed({ user }: { user: User }) {
                   </span>
                 </div>
                 <a
-                  href={`/post/${post.id}`}
+                  href={`/posts/${post.id}`}
                   className="text-lg font-semibold text-blue-600 hover:underline"
                 >
                   {post.title}

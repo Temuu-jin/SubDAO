@@ -1,6 +1,7 @@
 'use client';
 import { gql, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
+import { GetUserResponse } from '../../util/auth';
 import { User } from '../../util/types';
 import CreatePostForm from './CreatePostForm';
 import CreateSidebar from './CreateSidebar';
@@ -28,12 +29,11 @@ const getUserByIdQuery = gql`
   }
 `;
 
-export default function MainPage({ userId }: { userId: string }) {
-  const { data, loading, error } = useQuery(getUserByIdQuery, {
-    variables: { userById: userId },
-    pollInterval: 5000,
-  });
-
+export default function MainPage({
+  loggedUser,
+}: {
+  loggedUser: GetUserResponse;
+}) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFixed, setIsFixed] = useState(false);
 
@@ -59,31 +59,27 @@ export default function MainPage({ userId }: { userId: string }) {
   }, []);
   // State to track the active tab
   const [activeTab, setActiveTab] = useState('Public');
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :{error.message}</p>;
-
-  const user: User = data.userById;
 
   // Function to render the appropriate PostsFeed based on the active tab
   const renderPostsFeed = () => {
     switch (activeTab) {
       case 'Subscribed':
         // return <BestPostsFeed />;
-        return <SubscribedFeed user={user} />;
+        return <SubscribedFeed user={loggedUser} />;
       case 'DAO Subscription':
         // return <HotPostsFeed />;
-        return <PublicPostsFeed />;
+        return <PublicPostsFeed loggedUser={loggedUser} />;
       case 'User Subscriptions':
         // return <NewPostsFeed />;
-        return <PublicPostsFeed />;
+        return <PublicPostsFeed loggedUser={loggedUser} />;
       case 'Public':
         // return <TopPostsFeed />;
-        return <PublicPostsFeed />;
+        return <PublicPostsFeed loggedUser={loggedUser} />;
       default:
         return null;
     }
   };
-  if (!user) {
+  if (!loggedUser) {
     return (
       <main className=" min-h-screen p-4">
         <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
@@ -116,14 +112,14 @@ export default function MainPage({ userId }: { userId: string }) {
       <div className="xl:col-span-5 lg:col-span-7 md:col-span-7 sm:col-span-7">
         {isFixed === false ? (
           <div>
-            <CreatePostForm user={user as User} />
+            <CreatePostForm user={loggedUser} />
           </div>
         ) : (
           <div>
             {isExpanded ? (
               <div>
                 <button onClick={() => setIsExpanded(false)}>x</button>
-                <CreatePostForm user={user as User} />
+                <CreatePostForm user={loggedUser} />
               </div>
             ) : (
               <div

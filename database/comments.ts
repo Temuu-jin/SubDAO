@@ -1,11 +1,20 @@
 import { cache } from 'react';
-import { Comment } from '../util/types';
+import { Comment, CommentWithUsername } from '../util/types';
 import { sql } from './connect';
 
-export const getComments = cache(async () => {
-  const comments = await sql<Comment[]>`SELECT * FROM comments`;
-  return comments;
-});
+export const getComments = async () => {
+  const result = await sql<CommentWithUsername[]>`
+    SELECT
+      comments.*,
+      users.username
+    FROM
+      comments
+    LEFT JOIN
+      users ON users.id = comments.user_id
+  `;
+
+  return result;
+};
 
 export const getCommentById = cache(async (id: number) => {
   const [comment] = await sql<

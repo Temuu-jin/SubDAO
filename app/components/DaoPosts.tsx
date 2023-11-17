@@ -28,7 +28,7 @@ export function DaoPosts({ daoId }: { daoId: string }) {
       <ul className="list-disc pl-5 list-none">
         {posts.map((post) => (
           <div key={`post-${post.id}`}>
-            <Link href={`/daos/${daoId as string}/${post.id as number}`}>
+            <Link href={`/posts/${post.id as number}`}>
               <div>Title: {post.title}</div>
               <div>{post.body}</div>
               <div>Created by UserID: {post.userId}</div>

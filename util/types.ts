@@ -21,6 +21,21 @@ export type Post = {
   updatedAt: Date;
 };
 
+export type PostWithCommentsAndVotes = {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+  daoId: number;
+  membersOnly: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  user: User;
+  comments: CommentWithUsername[];
+  votes: Vote[];
+  dao: Dao;
+};
+
 export type Comment = {
   id: number;
   body: string;
@@ -30,7 +45,16 @@ export type Comment = {
   createdAt: Date;
   updatedAt: Date;
 };
-
+export type CommentWithUsername = {
+  id: number;
+  user: User;
+  body: string;
+  userId: number;
+  postId: number;
+  commentRef: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 export type Dao = {
   id: number;
   name: string;
