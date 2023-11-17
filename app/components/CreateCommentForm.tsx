@@ -67,7 +67,7 @@ export default function CreateCommentForm({
         </div>
 
         <div className="flex justify-center">
-          <button className="ml-2 w-full bg-gradient-to-r from-ePurple to-eViolet text-white rounded-md text-xs mt-1 p-1">
+          <button className="ml-2 w-full bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full text-xs mt-1 py-1 px-2">
             Comment
           </button>
         </div>

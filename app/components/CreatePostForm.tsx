@@ -220,7 +220,7 @@ export default function CreatePostForm({ user }: { user: GetUserResponse }) {
             <span className="text-gray-700 font-medium">Members Only</span>
           </label>
 
-          <button className="bg-gradient-to-r from-ePurple to-eViolet text-white rounded-full px-8 py-2 hover:bg-[#9A00FA] transition-colors duration-200">
+          <button className="bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full px-8 py-2 hover:bg-[#9A00FA] transition-colors duration-200">
             Post
           </button>
         </div>
