@@ -39,7 +39,6 @@ import {
   getPosts,
   getPostsByDaoId,
   getPostsByUserId,
-  getPublicPosts,
   getPublicPostsWithCommentsAndVotes,
 } from '../../../database/posts';
 import {

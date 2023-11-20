@@ -53,14 +53,7 @@ export default async function SingleDaoPage(props: SingleDaoPageProps) {
               </p>
             </div>
             <div>
-              {member ? (
-                <LeaveDaoButton
-                  userId={user.id ? user.id.toString() : ''}
-                  daoId={dao.id.toString()}
-                />
-              ) : (
-                <JoinDaoButton userId={user.id} daoId={dao.id} />
-              )}
+              <JoinDaoButton userId={user.id} daoId={dao.id} />
             </div>
           </div>
         </div>

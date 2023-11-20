@@ -1,25 +1,9 @@
 'use client';
 
-import { gql, useQuery } from '@apollo/client';
 import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
-import { useState } from 'react';
 import { GetUserResponse } from '../../util/auth';
-import { Comment, CommentWithUsername, Post, User } from '../../util/types';
+import { CommentWithUsername, Post, User } from '../../util/types';
 
-const getCommentsByPostQuery = gql`
-  query CommentsByPost($postId: ID!) {
-    commentsByPost(postId: $postId) {
-      id
-      body
-      userId
-      postId
-      commentId
-      createdAt
-      updatedAt
-    }
-  }
-`;
 type CommentsProps = {
   loggedUser?: GetUserResponse;
   comments: CommentWithUsername[];
