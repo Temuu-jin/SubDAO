@@ -2,8 +2,6 @@
 
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
-import Link from 'next/link';
-import { use } from 'react';
 import { Dao, Post, User, Vote } from '../../util/types';
 
 const getPublicPostsQuery = gql`

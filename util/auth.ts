@@ -1,8 +1,14 @@
-import { jwtVerify } from 'jose';
+import exp from 'constants';
+import { jwtVerify, SignJWT } from 'jose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { getParsedCookie } from './cookies';
 import { User } from './types';
+
+export type UserJwtPayload = {
+  jti: string;
+  iat: number;
+};
 
 export const getJwtSecretKey = () => {
   const secretKey = process.env.JWT_SECRET;
@@ -12,20 +18,20 @@ export const getJwtSecretKey = () => {
   return secretKey;
 };
 
-export const checkLogin = async () => {
-  const token = await cookies().get('sessionToken')?.value.toString();
-  if (!token) {
-    return false;
+export const checkLogin = async (token: string) => {
+  try {
+    const verified = await jwtVerify(
+      token,
+      new TextEncoder().encode(getJwtSecretKey()),
+    );
+    return verified.payload as UserJwtPayload;
+  } catch (err) {
+    console.error(err);
   }
-  const verified = await jwtVerify(
-    token,
-    new TextEncoder().encode(getJwtSecretKey()),
-  );
-  return verified ? true : false;
 };
 
 export const getJWT = async () => {
-  const token = await cookies().get('sessionToken')?.value.toString();
+  const token = cookies().get('sessionToken')?.value.toString();
 
   const tokenVerified: jwt.JwtPayload = jwt.verify(
     token!,
@@ -34,6 +40,7 @@ export const getJWT = async () => {
 
   return tokenVerified.payload;
 };
+
 export type GetUserResponse = {
   id: string;
   username: string;
@@ -45,7 +52,7 @@ export type GetUserResponse = {
   userSubs: number;
 };
 export const getUser = async () => {
-  const dataString: string = await getParsedCookie().toString();
+  const dataString: string = getParsedCookie().toString();
   const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
 
   return user as GetUserResponse;
@@ -63,13 +70,9 @@ export const createSessionToken = async (user: User) => {
     userSubs: user.userSubs,
   };
   const options = {
-    expiresIn: '1h',
+    expiresIn: '1m',
   };
-  const sessionToken = await jwt.sign(
-    payload,
-    process.env.JWT_SECRET!,
-    options,
-  );
+  const sessionToken = jwt.sign(payload, process.env.JWT_SECRET!, options);
   return sessionToken;
 };
 
@@ -81,10 +84,6 @@ export const createRefreshToken = async (user: User) => {
   const options = {
     expiresIn: '7d', // Refresh token expires in 7 days
   };
-  const refreshToken = await jwt.sign(
-    payload,
-    process.env.JWT_SECRET!,
-    options,
-  );
+  const refreshToken = jwt.sign(payload, process.env.JWT_SECRET!, options);
   return refreshToken;
 };

@@ -6,6 +6,9 @@ export function getParsedCookie() {
 }
 
 export const setCookies = (sessionToken: string, refreshToken: string) => {
-  cookies().set('sessionToken', sessionToken, { httpOnly: true });
+  cookies().set('sessionToken', sessionToken, {
+    httpOnly: true,
+    maxAge: 60,
+  });
   cookies().set('refreshToken', refreshToken, { httpOnly: true });
 };
