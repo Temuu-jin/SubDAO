@@ -1,6 +1,5 @@
 import { jwtVerify } from 'jose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { cookies } from 'next/headers';
 import { getParsedCookie } from './cookies';
 import { User } from './types';
 
@@ -8,7 +7,16 @@ export type UserJwtPayload = {
   jti: string;
   iat: number;
 };
-
+export type GetUserResponse = {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: string;
+  bio: string;
+  postCount: number;
+  commentCount: number;
+  userSubs: number;
+};
 export const getJwtSecretKey = () => {
   const secretKey = process.env.JWT_SECRET;
   if (!secretKey || secretKey.length === 0) {
@@ -29,27 +37,6 @@ export const checkLogin = async (token: string) => {
   }
 };
 
-export const getJWT = async () => {
-  const token = cookies().get('sessionToken')?.value.toString();
-
-  const tokenVerified: jwt.JwtPayload = jwt.verify(
-    token!,
-    process.env.JWT_SECRET!,
-  ) as jwt.JwtPayload;
-
-  return tokenVerified.payload;
-};
-
-export type GetUserResponse = {
-  id: string;
-  username: string;
-  email: string;
-  createdAt: string;
-  bio: string;
-  postCount: number;
-  commentCount: number;
-  userSubs: number;
-};
 export const getUser = async () => {
   const dataString: string = getParsedCookie().toString();
   const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
