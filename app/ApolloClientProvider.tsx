@@ -10,14 +10,14 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: 'https://subdao.fly.dev/api/graphql',
+    uri: '/api/graphql',
 
     // uri: 'http://localhost:3000/api/graphql',
     fetchOptions: { cache: 'no-store' },
   });
 
   const httpLinkFly = new HttpLink({
-    uri: 'https://subdao.fly.dev/api/graphql',
+    uri: '/api/graphql',
     fetchOptions: { cache: 'no-store' },
   });
 
