@@ -11,7 +11,7 @@ export default function Signout() {
     <button
       onClick={async () => {
         await logout();
-        await router.refresh();
+        router.refresh();
       }}
       className="bg-red-600 text-white rounded-md hover:bg-red-700 flex flex-row text-left gap-2"
     >

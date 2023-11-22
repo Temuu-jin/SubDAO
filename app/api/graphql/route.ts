@@ -375,8 +375,11 @@ const resolvers = {
       const memberships = await getAllUserDaoMemberships(args.userId);
       return memberships;
     },
-    singlePostWithCommentsAndVotes: async (postId: number) => {
-      const post = getSinglePostWithCommentsAndVotes(postId);
+    singlePostWithCommentsAndVotes: async (
+      parent: null,
+      args: { postId: number },
+    ) => {
+      const post = await getSinglePostWithCommentsAndVotes(args.postId);
       return post;
     },
   },
@@ -415,15 +418,18 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
-      const passwordHash: string = await bcrypt.hash(args.password, 10);
-      const auth: boolean = await bcrypt.compare(args.password, passwordHash);
-      if (!auth) {
-        throw new GraphQLError('Invalid username or password');
-      }
       const user = await getUserByUsername(args.username);
       if (!user) {
         throw new GraphQLError('No user found');
       }
+      const auth: boolean = await bcrypt.compare(
+        args.password,
+        user.passwordHash,
+      );
+      if (!auth) {
+        throw new GraphQLError('Invalid username or password');
+      }
+
       const sessionToken = await createSessionToken(user);
       setCookies(sessionToken);
 

@@ -95,7 +95,9 @@ export const getAllPostsWithCommentsAndVotes = async () => {
         json_build_object(
           'id', comments.id,
           'body', comments.body,
+          'createdAt', comments.created_at,
           'user', json_build_object(
+            'id', comment_users.id,
             'username', comment_users.username
           )
         )
@@ -153,6 +155,7 @@ export const getPublicPostsWithCommentsAndVotes = async () => {
           'createdAt', comments.created_at,
           'updatedAt', comments.updated_at,
           'user', json_build_object(
+            'id', comment_users.id,
             'username', comment_users.username
           )
         )
@@ -208,7 +211,9 @@ export const getAllSubscribedPostsWithCommentsAndVotes = async () => {
         json_build_object(
           'id', comments.id,
           'body', comments.body,
+          'createdAt', comments.created_at,
           'user', json_build_object(
+            'id', comment_users.id,
             'username', comment_users.username
           )
         )
@@ -264,7 +269,9 @@ export const getSinglePostWithCommentsAndVotes = async (postId: number) => {
         json_build_object(
           'id', comments.id,
           'body', comments.body,
+          'createdAt', comments.created_at,
           'user', json_build_object(
+            'id', comment_users.id,
             'username', comment_users.username
           )
         )
@@ -302,6 +309,8 @@ export const getSinglePostWithCommentsAndVotes = async (postId: number) => {
     comments: post.comments || [],
     votes: post.votes || [],
   }));
-
-  return [posts[0]];
+  if (posts.length === 0) {
+    throw new Error(`Post with ID ${postId} not found`);
+  }
+  return posts[0] as PostWithCommentsAndVotes;
 };

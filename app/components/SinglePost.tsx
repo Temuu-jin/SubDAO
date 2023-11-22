@@ -1,115 +1,108 @@
 'use client';
 
+import { formatDistanceToNow } from 'date-fns';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Comment, Post, User } from '../../util/types';
+import { GetUserResponse } from '../../util/auth';
+import { PostWithCommentsAndVotes } from '../../util/types';
+import Comments from './Comments';
 import CreateCommentForm from './CreateCommentForm';
 
 type SinglePostPageProps = {
-  user?: User;
-  post: Post;
-  comments: Comment[];
+  user?: GetUserResponse;
+  post: PostWithCommentsAndVotes;
 };
-export default function SinglePost({
-  user,
-  post,
-  comments,
-}: SinglePostPageProps) {
+export default function SinglePost({ user, post }: SinglePostPageProps) {
   const [showCommentForm, setShowCommentForm] = useState(false);
-
-  if (!user) {
-    return (
-      <main className="bg-gray-100 min-h-screen p-4">
-        <div className="container mx-auto bg-white rounded shadow p-4">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <h1 className="text-2xl font-bold">{post?.title}</h1>
-            <p className="text-lg">{post?.body}</p>
-            {post?.createdAt ? (
-              <p className="text-sm text-gray-500">
-                {post?.createdAt.toString()}
-              </p>
-            ) : null}
-            <div className="w-full">
-              {comments ? (
-                comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="border-b border-gray-200 py-2"
-                  >
-                    <p className="text-base">{comment.body}</p>
-                    <p className="text-sm text-gray-500">
-                      {comment.createdAt.toString()}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      by {comment.userId}{' '}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <Link href="/login" className="text-blue-500 hover:underline">
-                  Login to Comment
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
+  const loggedIn = user ? true : false;
   return (
-    <main className="bg-gray-100 min-h-screen p-4">
-      <div className="container mx-auto bg-white rounded shadow p-4">
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <h1 className="text-2xl font-bold">{post?.title}</h1>
-          <p className="text-lg">{post?.body}</p>
-          {post?.createdAt ? (
-            <p className="text-sm text-gray-500">
-              {post?.createdAt.toString()}
-            </p>
-          ) : null}
-          <div className="w-full">
-            {comments ? (
-              <div>
-                {comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="border-b border-gray-200 py-2"
-                  >
-                    <p className="text-base">{comment.body}</p>
-                    <p className="text-sm text-gray-500">
-                      {comment.createdAt.toString()}
-                    </p>
-                    <p className="text-sm text-gray-500">by {comment.userId}</p>
-                  </div>
-                ))}
-
-                {showCommentForm ? (
-                  <div>
-                    <CreateCommentForm
-                      userId={user.id}
-                      postId={post.id}
-                      commentId={null}
-                    />
-                    <button onClick={() => setShowCommentForm(false)}>
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowCommentForm(true)}>
-                    Comment
-                  </button>
-                )}
-              </div>
-            ) : (
-              <CreateCommentForm
-                userId={user.id}
-                postId={post.id}
-                commentId={null}
+    <>
+      <div className="flex">
+        <div className="flex flex-col justify-center items-center mr-4 text-gray-400">
+          <button aria-label="upvote">
+            <svg
+              className="h-6 w-6 hover:text-solanaGreen"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 15l7-7 7 7"
               />
-            )}
+            </svg>
+          </button>
+          <span className="text-xs">Vote</span>
+          <button aria-label="downvote">
+            <svg
+              className="h-6 w-6 hover:text-[#ff4500]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-shrink-0 mr-4 pt-5">
+          <Image
+            src="https://i.redd.it/75dkc76f6xyb1.jpg"
+            className="h-20 w-20"
+            width={200}
+            height={200}
+            alt="Post avatar"
+          />
+        </div>
+        <div className="flex-grow">
+          <div className="">
+            {post.daoId > 0 ? (
+              <span className="text-xs font-semibold hover:underline">
+                d/{post.dao.name}
+                <span className="text-xs text-gray-400"> • </span>
+              </span>
+            ) : null}
+            <span className="text-xs font-semibold hover:underline">
+              u/{post.user.username}{' '}
+            </span>
+            {' - '}
+            <span className="justify-end text-xs font-semibold hover:underline">
+              {formatDistanceToNow(new Date(post.createdAt), {
+                addSuffix: true,
+              })}
+            </span>
           </div>
+          <a
+            href={`/posts/${post.id}`}
+            className="text-lg font-semibold hover:text-solanaPurple hover:underline"
+          >
+            {post.title}
+          </a>
+          <p className="text-sm mt-1">{post.body}</p>
         </div>
       </div>
-    </main>
+      {/* Action Buttons */}
+      <div className="mt-2">
+        {user ? (
+          <CreateCommentForm
+            userId={parseInt(user.id)}
+            postId={post.id}
+            commentId={null}
+          />
+        ) : (
+          <Link href="/login" className="text-xs">
+            Login to Comment{' '}
+          </Link>
+        )}
+      </div>
+      <Comments loggedUser={user} comments={post.comments} />
+    </>
   );
 }

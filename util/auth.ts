@@ -1,5 +1,4 @@
-import exp from 'constants';
-import { jwtVerify, SignJWT } from 'jose';
+import { jwtVerify } from 'jose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { getParsedCookie } from './cookies';
@@ -70,7 +69,7 @@ export const createSessionToken = async (user: User) => {
     userSubs: user.userSubs,
   };
   const options = {
-    expiresIn: '1m',
+    expiresIn: '1h',
   };
   const sessionToken = jwt.sign(payload, process.env.JWT_SECRET!, options);
   return sessionToken;

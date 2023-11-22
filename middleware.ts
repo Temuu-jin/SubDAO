@@ -16,7 +16,6 @@ export async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/profile') && !verifiedToken) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
-
   if (req.nextUrl.pathname.startsWith('/createdao') && !verifiedToken) {
     return NextResponse.redirect(new URL('/login', req.url));
   }

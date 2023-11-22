@@ -9,9 +9,9 @@ type CommentsProps = {
   comments: CommentWithUsername[];
 };
 export default function Comments({ loggedUser, comments }: CommentsProps) {
-  console.log('comments: ', comments);
+  console.log('loggedUser in comments: ', loggedUser);
+  console.log('comments in comments: ', comments);
   if (loggedUser) {
-    console.log('loggedUser = true');
     if (comments.length > 0) {
       return (
         <div>
@@ -26,14 +26,20 @@ export default function Comments({ loggedUser, comments }: CommentsProps) {
               <p className="text-xs text-gray-500">
                 by {comment.user.username}
               </p>
+              {loggedUser.username === comment.user.username ? (
+                <button
+                  // onClick={}
+                  className="text-[#FF0000]"
+                >
+                  X
+                </button>
+              ) : null}
             </div>
           ))}
         </div>
       );
     }
   } else {
-    console.log('loggedUser = false');
-    console.log('comments: ', comments);
     if (comments.length > 0) {
       return (
         <div>

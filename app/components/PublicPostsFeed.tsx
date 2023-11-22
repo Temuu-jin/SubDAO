@@ -49,8 +49,9 @@ export function PublicPostsFeed({ loggedUser }: PublicPostsFeedProps) {
   if (errorPosts) return <div>Error: {errorPosts.message}</div>;
   console.log('dataPosts', dataPosts);
 
-  const posts: PostWithCommentsAndVotes[] =
-    dataPosts.publicPostsWithCommentsAndVotes;
+  const posts: PostWithCommentsAndVotes[] = [
+    ...dataPosts.publicPostsWithCommentsAndVotes,
+  ].reverse();
   console.log('posts', posts);
   return (
     <div className="text-left">
