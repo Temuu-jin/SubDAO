@@ -6,7 +6,7 @@ import { Comment, Post, User } from '../../util/types';
 import CreateCommentForm from './CreateCommentForm';
 
 type SinglePostPageProps = {
-  user: User;
+  user?: User;
   post: Post;
   comments: Comment[];
 };
@@ -15,10 +15,8 @@ export default function SinglePost({
   post,
   comments,
 }: SinglePostPageProps) {
-  console.log('user', user);
-  console.log('post', post);
-  console.log('comments', comments);
   const [showCommentForm, setShowCommentForm] = useState(false);
+
   if (!user) {
     return (
       <main className="bg-gray-100 min-h-screen p-4">
@@ -42,7 +40,9 @@ export default function SinglePost({
                     <p className="text-sm text-gray-500">
                       {comment.createdAt.toString()}
                     </p>
-                    <p className="text-sm text-gray-500">by {comment.userId}</p>
+                    <p className="text-sm text-gray-500">
+                      by {comment.userId}{' '}
+                    </p>
                   </div>
                 ))
               ) : (

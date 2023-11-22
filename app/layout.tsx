@@ -55,19 +55,17 @@ export default async function RootLayout({
         <div className="xl:col-span-2 xl:block lg:col-span-1 lg:block md:hidden sm:hidden" />
         <aside className="xl:col-span-1 lg:col-span-2 md:col-span-2 sm: text-right    p-2 ">
           <nav>
-            <div className="mb-10">
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 30 30"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="15" cy="15" r="15" fill="#D9D9D9" />
-              </svg>
-            </div>
             <div className="">
               <div className="fixed flex flex-col text-left gap-10">
+                <div className="my-3 w-7 rounded-full overflow-hidden">
+                  <Image
+                    alt="logo"
+                    objectFit="cover"
+                    src="/logo.png"
+                    width={30}
+                    height={30}
+                  />
+                </div>
                 {verifiedToken === undefined ? (
                   <>
                     <div className="flex flex-row gap-4">

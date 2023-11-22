@@ -3,6 +3,7 @@ import '../globals.css';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { GetUserResponse } from '../../util/auth';
 import { Dao, Membership, User } from '../../util/types';
 
 const createPostMutation = gql`
@@ -52,7 +53,7 @@ export type MembershipWithDaoName = Membership & {
   daoName: string;
 };
 
-export default function CreatePostForm({ user }: { user: User }) {
+export default function CreatePostForm({ user }: { user: GetUserResponse }) {
   const router = useRouter();
   const [body, setBody] = useState('');
   const [title, setTitle] = useState('');
@@ -219,7 +220,7 @@ export default function CreatePostForm({ user }: { user: User }) {
             <span className="text-gray-700 font-medium">Members Only</span>
           </label>
 
-          <button className="bg-gradient-to-r from-ePurple to-eViolet text-white rounded-full px-8 py-2 hover:bg-[#9A00FA] transition-colors duration-200">
+          <button className="bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full px-8 py-2 hover:bg-[#9A00FA] transition-colors duration-200">
             Post
           </button>
         </div>

@@ -42,29 +42,29 @@ export default function CreateCommentForm({
     },
     onCompleted: () => {
       console.log('onCompleted');
+      setBody('');
     },
   });
 
   return (
-    <div className="bg-white rounded shadow p-4 max-w-lg">
+    <div className="bg-white">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           await createComment();
         }}
+        className=""
       >
-        <div className="mb-4">
-          <textarea
+        <div className="">
+          <input
             title="body"
+            value={body}
             onChange={(event) => setBody(event.currentTarget.value)}
-            placeholder="Content..."
-            className="mt-1 p-2 w-full border rounded-md"
+            placeholder="Comment..."
+            className="mt-1 p-1 w-4/6 border rounded-md text-xs"
             required
           />
-        </div>
-
-        <div className="mt-6">
-          <button className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
+          <button className="ml-2 w-1/6 bg-gradient-to-r from-ePurple to-eViolet text-[#ffffff] rounded-full text-xs mt-1 py-1 px-2">
             Comment
           </button>
         </div>

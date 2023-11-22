@@ -9,20 +9,19 @@ import SinglePost from '../../components/SinglePost';
 
 type SinglePostPageProps = {
   params: {
-    postId: number;
+    postId: string;
   };
 };
 export default async function singlePostPage(props: SinglePostPageProps) {
   const userAuth = await getUser();
+  const user = await getUserById(parseInt(userAuth.id));
+  const post = (await getPostById(Number(props.params.postId))) as Post;
+  const comments = (await getCommentsByPostId(
+    Number(props.params.postId),
+  )) as Comment[];
   if (!userAuth) {
-    console.log('no user auth');
+    return <SinglePost post={post} comments={comments} />;
   } else {
-    const user = await getUserById(parseInt(userAuth.id));
-    console.log('props:', props.params.postId);
-    const post = (await getPostById(props.params.postId)) as Post;
-    const comments = (await getCommentsByPostId(
-      Number(props.params.postId),
-    )) as Comment[];
     console.log('post', post);
     console.log('comments', comments);
     return <SinglePost user={user as User} post={post} comments={comments} />;

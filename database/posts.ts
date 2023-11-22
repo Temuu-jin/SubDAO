@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { Post } from '../util/types';
+import { Post, PostWithCommentsAndVotes } from '../util/types';
 import { sql } from './connect';
 
 export const getPosts = cache(async () => {
@@ -80,3 +80,228 @@ export const getPublicPosts = cache(async () => {
   SELECT * FROM posts WHERE members_only = false`;
   return posts;
 });
+
+export const getAllPostsWithCommentsAndVotes = async () => {
+  const result = await sql<PostWithCommentsAndVotes[]>`
+    SELECT
+      posts.*,
+      json_build_object(
+        'username', post_users.username
+      ) AS user,
+      json_build_object(
+        'name', post_daos.name
+      ) AS dao,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', comments.id,
+          'body', comments.body,
+          'user', json_build_object(
+            'username', comment_users.username
+          )
+        )
+      ) FILTER (WHERE comments.id IS NOT NULL), '[]') AS comments,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', votes.id,
+          'vote_type', votes.vote_type
+        )
+      ) FILTER (WHERE votes.id IS NOT NULL), '[]') AS votes
+    FROM
+      posts
+    LEFT JOIN
+      users AS post_users ON posts.user_id = post_users.id
+    LEFT JOIN
+      daos AS post_daos ON posts.dao_id = post_daos.id
+    LEFT JOIN
+      comments ON comments.post_id = posts.id
+    LEFT JOIN
+      users AS comment_users ON comments.user_id = comment_users.id
+    LEFT JOIN
+      votes ON votes.post_id = posts.id
+
+    GROUP BY
+    posts.id, post_users.id, post_daos.id, post_daos.name
+    ORDER BY
+      posts.id ASC
+  `;
+
+  const posts = result.map((post) => ({
+    ...post,
+    user: post.user ? { username: post.user.username } : null,
+    dao: post.dao ? { name: post.dao.name } : null,
+    comments: post.comments || [],
+    votes: post.votes || [],
+  }));
+
+  return posts;
+};
+
+export const getPublicPostsWithCommentsAndVotes = async () => {
+  const result = await sql<PostWithCommentsAndVotes[]>`
+    SELECT
+      posts.*,
+      json_build_object(
+        'username', post_users.username
+      ) AS user,
+      json_build_object(
+        'name', post_daos.name
+      ) AS dao,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', comments.id,
+          'body', comments.body,
+          'createdAt', comments.created_at,
+          'updatedAt', comments.updated_at,
+          'user', json_build_object(
+            'username', comment_users.username
+          )
+        )
+      ) FILTER (WHERE comments.id IS NOT NULL), '[]') AS comments,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', votes.id,
+          'vote_type', votes.vote_type
+        )
+      ) FILTER (WHERE votes.id IS NOT NULL), '[]') AS votes
+    FROM
+      posts
+    LEFT JOIN
+      users AS post_users ON posts.user_id = post_users.id
+    LEFT JOIN
+      daos AS post_daos ON posts.dao_id = post_daos.id
+    LEFT JOIN
+      comments ON comments.post_id = posts.id
+    LEFT JOIN
+      users AS comment_users ON comments.user_id = comment_users.id
+    LEFT JOIN
+      votes ON votes.post_id = posts.id
+    WHERE
+      posts.members_only = false
+    GROUP BY
+    posts.id, post_users.id, post_daos.id, post_daos.name
+    ORDER BY
+      posts.id ASC
+  `;
+
+  const posts = result.map((post) => ({
+    ...post,
+    user: post.user ? { username: post.user.username } : null,
+    dao: post.dao ? { name: post.dao.name } : null,
+    comments: post.comments || [],
+    votes: post.votes || [],
+  }));
+
+  return posts;
+};
+
+export const getAllSubscribedPostsWithCommentsAndVotes = async () => {
+  const result = await sql<PostWithCommentsAndVotes[]>`
+    SELECT
+      posts.*,
+      json_build_object(
+        'username', post_users.username
+      ) AS user,
+      json_build_object(
+        'name', post_daos.name
+      ) AS dao,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', comments.id,
+          'body', comments.body,
+          'user', json_build_object(
+            'username', comment_users.username
+          )
+        )
+      ) FILTER (WHERE comments.id IS NOT NULL), '[]') AS comments,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', votes.id,
+          'vote_type', votes.vote_type
+        )
+      ) FILTER (WHERE votes.id IS NOT NULL), '[]') AS votes
+    FROM
+      posts
+    LEFT JOIN
+      users AS post_users ON posts.user_id = post_users.id
+    LEFT JOIN
+      daos AS post_daos ON posts.dao_id = post_daos.id
+    LEFT JOIN
+      comments ON comments.post_id = posts.id
+    LEFT JOIN
+      users AS comment_users ON comments.user_id = comment_users.id
+    LEFT JOIN
+      votes ON votes.post_id = posts.id
+    WHERE
+      posts.members_only = true
+    GROUP BY
+    posts.id, post_users.id, post_daos.id, post_daos.name
+    ORDER BY
+      posts.id ASC
+  `;
+
+  const posts = result.map((post) => ({
+    ...post,
+    user: post.user ? { username: post.user.username } : null,
+    dao: post.dao ? { name: post.dao.name } : null,
+    comments: post.comments || [],
+    votes: post.votes || [],
+  }));
+
+  return posts;
+};
+
+export const getSinglePostWithCommentsAndVotes = async (postId: number) => {
+  const result = await sql<PostWithCommentsAndVotes[]>`
+    SELECT
+      posts.*,
+      json_build_object(
+        'username', post_users.username
+      ) AS user,
+      json_build_object(
+        'name', post_daos.name
+      ) AS dao,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', comments.id,
+          'body', comments.body,
+          'user', json_build_object(
+            'username', comment_users.username
+          )
+        )
+      ) FILTER (WHERE comments.id IS NOT NULL), '[]') AS comments,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', votes.id,
+          'vote_type', votes.vote_type
+        )
+      ) FILTER (WHERE votes.id IS NOT NULL), '[]') AS votes
+    FROM
+      posts
+    LEFT JOIN
+      users AS post_users ON posts.user_id = post_users.id
+    LEFT JOIN
+      daos AS post_daos ON posts.dao_id = post_daos.id
+    LEFT JOIN
+      comments ON comments.post_id = posts.id
+    LEFT JOIN
+      users AS comment_users ON comments.user_id = comment_users.id
+    LEFT JOIN
+      votes ON votes.post_id = posts.id
+    WHERE
+      posts.id = ${postId}
+    GROUP BY
+      posts.id, post_users.id, post_daos.id, post_daos.name
+    ORDER BY
+      posts.id ASC
+  `;
+
+  const posts = result.map((post) => ({
+    ...post,
+    user: post.user ? { username: post.user.username } : null,
+    dao: post.dao ? { name: post.dao.name } : null,
+    comments: post.comments || [],
+    votes: post.votes || [],
+  }));
+
+  return [posts[0]];
+};
