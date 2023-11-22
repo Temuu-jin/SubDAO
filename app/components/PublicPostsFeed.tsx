@@ -54,7 +54,7 @@ export function PublicPostsFeed({ loggedUser }: PublicPostsFeedProps) {
   console.log('posts', posts);
   return (
     <div className="text-left">
-      <ul className="divide-y divide-gray-200 ">
+      <ul>
         {posts.map((post) => (
           <div key={post.id}>
             <PostInFeed post={post} loggedUser={loggedUser} />

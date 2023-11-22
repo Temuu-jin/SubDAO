@@ -40,6 +40,7 @@ import {
   getPostsByDaoId,
   getPostsByUserId,
   getPublicPostsWithCommentsAndVotes,
+  getSinglePostWithCommentsAndVotes,
 } from '../../../database/posts';
 import {
   createUser,
@@ -193,6 +194,7 @@ const typeDefs = gql`
     getAllUserDaoMemberships(userId: ID!): [Membership]
     postsWithCommentsAndVotes: [PostWithCommentsAndVotes]
     publicPostsWithCommentsAndVotes: [PostWithCommentsAndVotes]
+    singlePostWithCommentsAndVotes(postId: ID!): PostWithCommentsAndVotes
   }
 
   type Mutation {
@@ -373,6 +375,10 @@ const resolvers = {
       const memberships = await getAllUserDaoMemberships(args.userId);
       return memberships;
     },
+    singlePostWithCommentsAndVotes: async (postId: number) => {
+      const post = getSinglePostWithCommentsAndVotes(postId);
+      return post;
+    },
   },
   Mutation: {
     registerUser: async (
@@ -419,8 +425,7 @@ const resolvers = {
         throw new GraphQLError('No user found');
       }
       const sessionToken = await createSessionToken(user);
-      const refreshToken = await createRefreshToken(user);
-      setCookies(sessionToken, refreshToken);
+      setCookies(sessionToken);
 
       return { user } as LoginResponse;
     },
