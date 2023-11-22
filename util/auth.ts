@@ -39,7 +39,10 @@ export const checkLogin = async (token: string) => {
 
 export const getUser = async () => {
   const dataString: string = getParsedCookie().toString();
-  const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
+  const user: JwtPayload | null = jwt.verify(
+    dataString,
+    getJwtSecretKey(),
+  ) as JwtPayload;
 
   return user as GetUserResponse;
 };

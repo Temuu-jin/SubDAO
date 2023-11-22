@@ -14,6 +14,19 @@ const createUserMutation = gql`
   }
 `;
 
+const loginMutation = gql`
+  mutation LoginUser($username: String!, $password: String!) {
+    loginUser(username: $username, password: $password) {
+      user {
+        id
+        username
+        email
+        createdAt
+      }
+    }
+  }
+`;
+
 export default function SignupForm() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -21,6 +34,19 @@ export default function SignupForm() {
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
+  const [loginUser] = useMutation(loginMutation, {
+    variables: {
+      username,
+      password,
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    onCompleted: async () => {
+      await router.refresh();
+      await router.push('/');
+    },
+  });
   const [createUser] = useMutation(createUserMutation, {
     variables: {
       email,
@@ -32,7 +58,7 @@ export default function SignupForm() {
       return onError;
     },
     onCompleted: async () => {
-      await router.push('/login');
+      await loginUser();
     },
   });
 

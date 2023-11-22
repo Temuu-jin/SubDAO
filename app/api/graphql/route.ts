@@ -62,7 +62,7 @@ import {
   upvoteComment,
   upvotePost,
 } from '../../../database/votes';
-import { createRefreshToken, createSessionToken } from '../../../util/auth';
+import { createSessionToken } from '../../../util/auth';
 import { setCookies } from '../../../util/cookies';
 import {
   Dao,
@@ -398,7 +398,10 @@ const resolvers = {
       ) {
         throw new GraphQLError('Required field is missing');
       }
-      // const passwordHash: string = await bcrypt.hash(args.password, 10);
+      const user = await getUserByUsername(args.username);
+      if (user !== undefined) {
+        throw new GraphQLError('Username already taken');
+      }
       const passwordHash: string = await bcrypt.hash(args.password, 10);
       return await createUser(args.username, passwordHash, args.email);
     },
@@ -427,7 +430,7 @@ const resolvers = {
         user.passwordHash,
       );
       if (!auth) {
-        throw new GraphQLError('Invalid username or password');
+        throw new GraphQLError('Invalid password');
       }
 
       const sessionToken = await createSessionToken(user);
