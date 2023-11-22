@@ -17,17 +17,17 @@ export default function PostInFeed({
   loggedUser?: GetUserResponse;
 }) {
   const [showComments, setShowComments] = useState(false);
-
+  console.log('loggedUser', loggedUser);
   return (
     <li
       key={`post-${post.id}`}
-      className="p-4 hover:bg-gray-100  transition-colors duration-200 border border-[#d9d9d9] mb-4"
+      className="p-4 hover:bg-grey transition-colors duration-200 border border-[#d9d9d9] mb-4"
     >
       <div className="flex">
         <div className="flex flex-col justify-center items-center mr-4 text-gray-400">
           <button aria-label="upvote">
             <svg
-              className="h-6 w-6 text-gray-500 hover:text-orange-500"
+              className="h-6 w-6 hover:text-solanaGreen"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -40,10 +40,10 @@ export default function PostInFeed({
               />
             </svg>
           </button>
-          <span className="text-xs text-gray-500">Vote</span>
+          <span className="text-xs">Vote</span>
           <button aria-label="downvote">
             <svg
-              className="h-6 w-6 text-gray-500 hover:text-orange-500"
+              className="h-6 w-6 hover:text-[#ff4500]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -69,16 +69,16 @@ export default function PostInFeed({
         <div className="flex-grow">
           <div className="">
             {post.daoId > 0 ? (
-              <span className="text-xs font-semibold text-gray-500 hover:underline">
+              <span className="text-xs font-semibold hover:underline">
                 d/{post.dao.name}
                 <span className="text-xs text-gray-400"> • </span>
               </span>
             ) : null}
-            <span className="text-xs font-semibold text-gray-500 hover:underline">
+            <span className="text-xs font-semibold hover:underline">
               u/{post.user.username}{' '}
             </span>
-            <span className="justify-end text-xs font-semibold text-gray-500 hover:underline">
-              {' - '}
+            {' - '}
+            <span className="justify-end text-xs font-semibold hover:underline">
               {formatDistanceToNow(new Date(post.createdAt), {
                 addSuffix: true,
               })}
@@ -86,26 +86,22 @@ export default function PostInFeed({
           </div>
           <a
             href={`/posts/${post.id}`}
-            className="text-lg font-semibold text-blue-600 hover:underline"
+            className="text-lg font-semibold hover:text-solanaPurple hover:underline"
           >
             {post.title}
           </a>
-          <p className="text-sm text-gray-500 mt-1">{post.body}</p>
+          <p className="text-sm mt-1">{post.body}</p>
         </div>
       </div>
       {/* Action Buttons */}
 
-      <div className="flex justify-between items-center mt-4 text-gray-500 text-xs">
+      <div className="flex justify-between items-center mt-4 text-xs">
         <button onClick={() => setShowComments(!showComments)}>
           {' '}
           Comments {'('}
           {post.comments.length}
           {')'}
         </button>
-        <div className="flex space-x-4">
-          <button>Share</button>
-          <button>Save</button>
-        </div>
       </div>
       <div className="mt-2">
         {loggedUser ? (

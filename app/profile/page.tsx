@@ -48,7 +48,6 @@ export default async function Profile() {
               </div>
             </div>
           )}
-          <h2 className="text-xl font-semibold mb-3">Posts:</h2>
           <ProfilePosts userId={user.id} />
         </div>
       </div>

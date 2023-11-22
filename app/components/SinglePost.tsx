@@ -17,7 +17,6 @@ export default function SinglePost({
 }: SinglePostPageProps) {
   const [showCommentForm, setShowCommentForm] = useState(false);
 
-
   if (!user) {
     return (
       <main className="bg-gray-100 min-h-screen p-4">
