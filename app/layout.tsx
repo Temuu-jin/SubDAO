@@ -57,7 +57,7 @@ export default async function RootLayout({
                     </div>
                     {verifiedToken === undefined || verifiedToken === '' ? (
                       <>
-                        <div className="flex flex-row gap-4">
+                        <div className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={home}
                             width={20}
@@ -67,7 +67,7 @@ export default async function RootLayout({
 
                           <Link href="/">Home</Link>
                         </div>
-                        <div className="flex flex-row gap-4">
+                        <div className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={daos}
                             width={20}
@@ -77,17 +77,34 @@ export default async function RootLayout({
                           <Link href="/daos">DAOs</Link>
                         </div>
 
-                        <Link href="/aboutus">About</Link>
+                        <Link
+                          href="/aboutus"
+                          className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey"
+                        >
+                          About
+                        </Link>
                         <div className="  flex flex-col gap-2">
-                          <Link href="/login">Login</Link>
-                          <Link href="/signup" data-test-id="link-signup">
+                          <Link
+                            href="/login"
+                            className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey"
+                          >
+                            Login
+                          </Link>
+                          <Link
+                            href="/signup"
+                            className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey"
+                            data-test-id="link-signup"
+                          >
                             Signup
                           </Link>
                         </div>
                       </>
                     ) : (
                       <>
-                        <Link href="/" className="flex flex-row gap-4">
+                        <Link
+                          href="/"
+                          className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey"
+                        >
                           <Image
                             src={home}
                             width={20}
@@ -97,7 +114,10 @@ export default async function RootLayout({
                           <div>Home</div>
                         </Link>
 
-                        <Link href="/daos" className="flex flex-row gap-4">
+                        <Link
+                          href="/daos"
+                          className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey"
+                        >
                           <Image
                             src={daos}
                             width={20}
@@ -106,7 +126,7 @@ export default async function RootLayout({
                           />
                           <div>DAOs</div>
                         </Link>
-                        <div className="flex flex-row gap-4">
+                        <button className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={notificationsIcon}
                             width={20}
@@ -114,8 +134,8 @@ export default async function RootLayout({
                             alt="home-svg"
                           />
                           <span>Notifications</span>
-                        </div>
-                        <div className="flex flex-row gap-4">
+                        </button>
+                        <button className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={messagesIcon}
                             width={20}
@@ -123,8 +143,8 @@ export default async function RootLayout({
                             alt="home-svg"
                           />
                           <span>Messages</span>
-                        </div>
-                        <div className="flex flex-row gap-4">
+                        </button>
+                        <div className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={profileIcon}
                             width={20}
@@ -139,7 +159,7 @@ export default async function RootLayout({
                             Profile
                           </Link>
                         </div>
-                        <div className="flex flex-row gap-4">
+                        <button className="flex flex-row gap-4 px-3 py-1 rounded-md hover:bg-grey">
                           <Image
                             src={moreIcon}
                             width={20}
@@ -147,7 +167,7 @@ export default async function RootLayout({
                             alt="home-svg"
                           />
                           <span>More</span>
-                        </div>
+                        </button>
                         <div className="fixed bottom-8">
                           <Signout />
                         </div>

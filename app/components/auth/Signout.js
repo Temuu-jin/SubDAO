@@ -13,7 +13,7 @@ export default function Signout() {
         await logout();
         router.refresh();
       }}
-      className="bg-red-600 text-white rounded-md hover:bg-red-700 flex flex-row text-left gap-2"
+      className=" text-white  flex flex-row text-left gap-2 gap-4 px-3 py-1 rounded-md hover:bg-grey"
     >
       <Image src={logoutIcon} width={20} height={20} alt="logout-svg" />
 
