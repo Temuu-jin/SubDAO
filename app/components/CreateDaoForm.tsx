@@ -1,7 +1,7 @@
 'use client';
 import '../globals.css';
 import { gql, useMutation } from '@apollo/client';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const createDaoMutation = gql`
@@ -15,6 +15,7 @@ const createDaoMutation = gql`
 `;
 
 export default function CreateDaoForm({ userId }: { userId: number }) {
+  const router = useRouter();
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
   const [onError, setOnError] = useState('');
@@ -30,7 +31,7 @@ export default function CreateDaoForm({ userId }: { userId: number }) {
       return onError;
     },
     onCompleted: () => {
-      redirect('/daos');
+      router.push('/daos');
     },
   });
 

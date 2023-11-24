@@ -1,5 +1,5 @@
 import '../../globals.css';
-import SignupForm from '../../components/SignupForm';
+import SignupForm from '../../components/auth/SignupForm';
 
 export default function Signup() {
   return (

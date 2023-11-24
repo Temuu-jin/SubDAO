@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import logoutIcon from '../../public/logoutIcon.svg';
-import { logout } from '../actions';
+import logoutIcon from '../../../public/logoutIcon.svg';
+import { logout } from '../../actions';
 
 export default function Signout() {
   const router = useRouter();

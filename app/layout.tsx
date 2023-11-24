@@ -10,10 +10,9 @@ import messagesIcon from '../public/messagesIcon.svg';
 import moreIcon from '../public/moreIcon.svg';
 import notificationsIcon from '../public/notificationsIcon.svg';
 import profileIcon from '../public/profileIcon.svg';
-import searchIcon from '../public/searchIcon.svg';
-import { checkLogin } from '../util/auth';
+import { checkLogin, getUser } from '../util/auth';
 import { ApolloClientProvider } from './ApolloClientProvider';
-import Signout from './components/Signout.js';
+import Signout from './components/auth/Signout.js';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,19 +20,6 @@ export const metadata: Metadata = {
   title: 'SubDAO',
   description: 'Create and join Communities',
 };
-
-async function verifyLogin() {
-  const sessionCookie = cookies().get('sessionToken');
-  if (sessionCookie) {
-    const auth = await checkLogin(sessionCookie.toString());
-    if (auth) {
-      return true;
-    }
-    return false;
-  } else {
-    return false;
-  }
-}
 
 export default async function RootLayout({
   children,
@@ -43,15 +29,15 @@ export default async function RootLayout({
   const token = cookies().get('sessionToken')?.value;
   const verifiedToken =
     token &&
-    (await checkLogin(token).catch((err) => {
+    (await getUser().catch((err) => {
       console.log(err);
     }));
-  console.log('verifiedToken', verifiedToken);
+
   return (
     <html lang="en">
       <body>
         <div>
-          <div className="text-center p-2 h-12">subdApp</div>
+          <div className="text-xl text-center p-2 h-10">subdApp</div>
           <div
             className={`grid xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-12 sm: ${inter.className}`}
           >
@@ -69,7 +55,7 @@ export default async function RootLayout({
                         height={30}
                       />
                     </div>
-                    {verifiedToken === undefined ? (
+                    {verifiedToken === undefined || verifiedToken === '' ? (
                       <>
                         <div className="flex flex-row gap-4">
                           <Image
@@ -145,7 +131,11 @@ export default async function RootLayout({
                             height={20}
                             alt="home-svg"
                           />
-                          <Link href="/profile" className=" text-white  block">
+
+                          <Link
+                            href={`/profile/${verifiedToken.id}`}
+                            className=" text-white  block"
+                          >
                             Profile
                           </Link>
                         </div>

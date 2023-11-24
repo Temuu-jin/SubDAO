@@ -4,8 +4,15 @@ import { getParsedCookie } from './cookies';
 import { User } from './types';
 
 export type UserJwtPayload = {
-  jti: string;
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+  bio: string;
+  postCount: number;
+  commentCount: number;
   iat: number;
+  exp: number;
 };
 export type GetUserResponse = {
   id: string;

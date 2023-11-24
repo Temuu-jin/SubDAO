@@ -5,6 +5,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
 import { NextRequest } from 'next/server';
+import { as } from 'pg-promise';
 import {
   createComment,
   createCommentInComment,
@@ -39,6 +40,8 @@ import {
   getPosts,
   getPostsByDaoId,
   getPostsByUserId,
+  getPostWithCommentsAndVotesByUser,
+  getPrivatePostWithCommentsAndVotes,
   getPublicPostsWithCommentsAndVotes,
   getSinglePostWithCommentsAndVotes,
 } from '../../../database/posts';
@@ -195,6 +198,8 @@ const typeDefs = gql`
     postsWithCommentsAndVotes: [PostWithCommentsAndVotes]
     publicPostsWithCommentsAndVotes: [PostWithCommentsAndVotes]
     singlePostWithCommentsAndVotes(postId: ID!): PostWithCommentsAndVotes
+    postWithCommentsAndVotesByUser(userId: ID!): [PostWithCommentsAndVotes]
+    privatePostWithCommentsAndVotes: [PostWithCommentsAndVotes]
   }
 
   type Mutation {
@@ -381,6 +386,17 @@ const resolvers = {
     ) => {
       const post = await getSinglePostWithCommentsAndVotes(args.postId);
       return post;
+    },
+    postWithCommentsAndVotesByUser: async (
+      parent: null,
+      args: { userId: number },
+    ) => {
+      const posts = await getPostWithCommentsAndVotesByUser(args.userId);
+      return posts;
+    },
+    privatePostWithCommentsAndVotes: async () => {
+      const posts = await getPrivatePostWithCommentsAndVotes();
+      return posts;
     },
   },
   Mutation: {

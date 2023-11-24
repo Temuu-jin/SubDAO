@@ -69,14 +69,20 @@ export default function PostInFeed({
         <div className="flex-grow">
           <div className="">
             {post.daoId > 0 ? (
-              <span className="text-xs font-semibold hover:underline">
+              <a
+                href={`/daos/${post.daoId}`}
+                className="text-xs font-semibold hover:underline"
+              >
                 d/{post.dao.name}
                 <span className="text-xs text-gray-400"> • </span>
-              </span>
+              </a>
             ) : null}
-            <span className="text-xs font-semibold hover:underline">
+            <a
+              href={`/profile/${post.userId}`}
+              className="text-xs font-semibold hover:underline"
+            >
               u/{post.user.username}{' '}
-            </span>
+            </a>
             {' - '}
             <span className="justify-end text-xs font-semibold hover:underline">
               {formatDistanceToNow(new Date(post.createdAt), {

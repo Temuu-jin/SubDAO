@@ -1,10 +1,11 @@
 'use client';
 import { gql, useMutation } from '@apollo/client';
-import { unstable_useCacheRefresh, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { unstable_useCacheRefresh, use, useState } from 'react';
 
-const leaveDaoMutation = gql`
-  mutation LeaveDao($userId: ID!, $daoId: ID!) {
-    leaveDao(userId: $userId, daoId: $daoId)
+const removeMembershipMutation = gql`
+  mutation RemoveMembership($userId: ID!, $daoId: ID!) {
+    removeMembership(userId: $userId, daoId: $daoId)
   }
 `;
 
@@ -12,15 +13,13 @@ export default function LeaveDaoButton({
   userId,
   daoId,
 }: {
-  userId: string;
-  daoId: string;
+  userId: number;
+  daoId: number;
 }) {
-  const refresh = unstable_useCacheRefresh();
+  const router = useRouter();
 
-  console.log('userId', userId);
-  console.log('daoId', daoId);
   const [onError, setOnError] = useState('');
-  const [leaveDao] = useMutation(leaveDaoMutation, {
+  const [leaveDao] = useMutation(removeMembershipMutation, {
     variables: {
       userId: userId,
       daoId: daoId,
@@ -30,9 +29,9 @@ export default function LeaveDaoButton({
       setOnError(error.message);
       return onError;
     },
-    onCompleted: () => {
-      console.log('onCompleted');
-      refresh();
+    onCompleted: async () => {
+      router.push('/daos');
+      await router.refresh();
     },
   });
   return (
@@ -42,7 +41,9 @@ export default function LeaveDaoButton({
         await leaveDao();
       }}
     >
-      <button className="text-blue-600 hover:text-blue-800">Leave DAO</button>
+      <button className="bg-[#FF0000]  px-3 py-1 rounded hover:bg-[#9A00FA]">
+        Leave DAO
+      </button>
     </form>
   );
 }

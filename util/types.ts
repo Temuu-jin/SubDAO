@@ -45,6 +45,7 @@ export type Comment = {
   createdAt: Date;
   updatedAt: Date;
 };
+
 export type CommentWithUsername = {
   id: number;
   user: User;

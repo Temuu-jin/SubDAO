@@ -1,18 +1,34 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { getPostsByUserId } from '../../database/posts';
-import { getParsedCookie } from '../../util/cookies';
-import { ProfilePosts } from '../components/ProfilePosts';
+import {
+  getPostsByUserId,
+  getPostWithCommentsAndVotesByUser,
+} from '../../../database/posts';
+import { getUserById } from '../../../database/users';
+import { GetUserResponse } from '../../../util/auth';
+import { getParsedCookie } from '../../../util/cookies';
+import { Post, PostWithCommentsAndVotes } from '../../../util/types';
+import PostInFeed from '../../components/PostInFeed';
+import { ProfilePosts } from '../../components/ProfilePosts';
 
-export default async function Profile() {
+type SinglePostPageProps = {
+  params: {
+    userId: string;
+  };
+};
+
+export default async function Profile(props: SinglePostPageProps) {
   // const data = await getUserById();
   const dataString: string = await getParsedCookie().toString();
-  const user: JwtPayload | null = jwt.decode(dataString) as JwtPayload;
-  const posts = await getPostsByUserId(user.id);
+  const loggedUser = jwt.decode(dataString) as GetUserResponse;
+  const user = await getUserById(parseInt(props.params.userId));
+  const posts = await getPostWithCommentsAndVotesByUser(
+    parseInt(props.params.userId),
+  );
   return (
     <main className="bg-gray-100 min-h-screen p-4">
       <div className="container mx-auto max-w-4xl">
         <div className="bg-white rounded-lg shadow p-6">
-          {user === null ? (
+          {user === undefined ? (
             <div>No user</div>
           ) : (
             <div className="flex my-4">
@@ -24,17 +40,8 @@ export default async function Profile() {
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold mb-4">
-                  Welcome {user.username}!
-                </h1>
+                <h1 className="text-2xl font-semibold mb-4">{user.username}</h1>
                 <div className="border-b pb-4 mb-4">
-                  <div className="font-medium">
-                    Account ID: <span className="font-normal">{user.id}</span>
-                  </div>
-                  <div className="font-medium">
-                    Username:{' '}
-                    <span className="font-normal">{user.username}</span>
-                  </div>
                   <div className="font-medium">
                     Email: <span className="font-normal">{user.email}</span>
                   </div>
@@ -48,7 +55,17 @@ export default async function Profile() {
               </div>
             </div>
           )}
-          <ProfilePosts userId={user.id} />
+          {posts ? (
+            <ul>
+              {posts.map((post) => {
+                return (
+                  <div key={`post-${post.id}`}>
+                    <PostInFeed post={post} loggedUser={loggedUser} />
+                  </div>
+                );
+              })}
+            </ul>
+          ) : null}
         </div>
       </div>
     </main>

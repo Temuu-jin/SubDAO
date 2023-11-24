@@ -77,13 +77,10 @@ export function SubscribedFeed({ user }: { user: GetUserResponse }) {
   if (errorVotes) return <div>Error: {errorVotes.message}</div>;
 
   const allPosts: Post[] = dataPosts.posts;
-  console.log('allPosts in subscribedfeed:', allPosts);
   const memberships: Membership[] = dataMemberships.getUserMemberships;
-  console.log('memberships in subscribedfeed:', memberships);
   const allPrivatePosts: Post[] = allPosts.filter(
     (post) => post.membersOnly === true,
   );
-  console.log('allPrivatePosts in subscribedfeed:', allPrivatePosts);
 
   const membersPrivatePosts: Post[] = allPrivatePosts.filter((post) => {
     const membership = memberships.find((m) => {
@@ -92,7 +89,6 @@ export function SubscribedFeed({ user }: { user: GetUserResponse }) {
     return membership ? true : false;
   });
   const posts: Post[] = membersPrivatePosts;
-  console.log('posts in subscribedfeed: ', posts);
   return (
     <div className="  text-left">
       <ul className="divide-y divide-gray-200 border border-[#d9d9d9]">

@@ -1,29 +1,55 @@
 'use client';
-import '../globals.css';
+import '../../globals.css';
 import { gql, useMutation } from '@apollo/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-const loginUser = gql`
-  mutation loginUser($username: String!, $password: String!) {
+const createUserMutation = gql`
+  mutation CreateUser($email: String!, $username: String!, $password: String!) {
+    registerUser(email: $email, username: $username, password: $password) {
+      id
+      email
+      username
+    }
+  }
+`;
+
+const loginMutation = gql`
+  mutation LoginUser($username: String!, $password: String!) {
     loginUser(username: $username, password: $password) {
       user {
         id
-        email
         username
+        email
+        createdAt
       }
     }
   }
 `;
 
-export default function SigninForm() {
+export default function SignupForm() {
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
-  const [login] = useMutation(loginUser, {
+  const [loginUser] = useMutation(loginMutation, {
     variables: {
+      username,
+      password,
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    onCompleted: async () => {
+      await router.refresh();
+      await router.push('/');
+    },
+  });
+  const [createUser] = useMutation(createUserMutation, {
+    variables: {
+      email,
       username,
       password,
     },
@@ -32,7 +58,7 @@ export default function SigninForm() {
       return onError;
     },
     onCompleted: async () => {
-      await router.refresh();
+      await loginUser();
     },
   });
 
@@ -41,7 +67,7 @@ export default function SigninForm() {
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          await login();
+          await createUser();
         }}
       >
         <div className="mb-4">
@@ -52,10 +78,26 @@ export default function SigninForm() {
             Username
           </label>
           <input
-            type="username"
+            type="text"
             name="username"
             onChange={(event) => setUsername(event.currentTarget.value)}
             placeholder="Username"
+            className="mt-1 p-2 w-full border rounded-md"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            onChange={(event) => setEmail(event.currentTarget.value)}
+            placeholder="Email"
             className="mt-1 p-2 w-full border rounded-md"
             required
           />
@@ -78,11 +120,10 @@ export default function SigninForm() {
         </div>
         <div className="mt-6">
           <button className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
-            Login
+            Sign up
           </button>
         </div>
       </form>
-      {onError ? <div>{onError}</div> : null}
     </div>
   );
 }

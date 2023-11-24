@@ -4,13 +4,9 @@ import { getUser } from '../../util/auth';
 import DaosPage from '../components/DaosPage';
 
 export default async function Daos() {
-  const user = await getUser();
-
-  return user ? (
+  return (
     <main className="bg-gray-100 min-h-screen p-4">
       <DaosPage />
     </main>
-  ) : (
-    redirect('/login')
   );
 }
