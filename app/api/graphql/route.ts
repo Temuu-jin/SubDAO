@@ -222,7 +222,7 @@ const typeDefs = gql`
       commentId: ID
     ): Comment!
     updateComment(id: ID!, body: String!): Comment!
-    deleteComment(id: ID!): Comment!
+    deleteComment(id: ID!): Comment
     createDao(name: String!, description: String!, userId: String!): Dao!
     updateDao(id: ID!, name: String!, description: String!): Dao!
     deleteDao(id: ID!): Dao!

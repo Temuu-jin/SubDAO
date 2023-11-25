@@ -1,6 +1,8 @@
 'use client';
 
-import { formatDistanceToNow } from 'date-fns';
+import { gql, useMutation } from '@apollo/client';
+import { formatDistanceToNow, set } from 'date-fns';
+import { useState } from 'react';
 import { GetUserResponse } from '../../util/auth';
 import { CommentWithUsername, Post, User } from '../../util/types';
 
@@ -8,32 +10,63 @@ type CommentsProps = {
   loggedUser?: GetUserResponse;
   comments: CommentWithUsername[];
 };
+
+const deleteCommentMutation = gql`
+  mutation DeleteComment($commentId: ID!) {
+    deleteComment(id: $commentId) {
+      id
+    }
+  }
+`;
 export default function Comments({ loggedUser, comments }: CommentsProps) {
-  console.log('loggedUser in comments: ', loggedUser);
-  console.log('comments in comments: ', comments);
+  const [commentIdToDelete, setCommentIdToDelete] = useState<number | null>(
+    null,
+  );
+  const [deleteComment] = useMutation(deleteCommentMutation, {
+    variables: {
+      commentId: commentIdToDelete,
+    },
+    onError: (error) => {
+      console.log(comments);
+      console.log('onError', error);
+    },
+    onCompleted: () => {
+      console.log('onCompleted');
+    },
+  });
+
   if (loggedUser) {
     if (comments.length > 0) {
       return (
         <div>
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-gray-200 py-2">
+            <div key={comment.id} className="py-2 px-3">
+              <div className="flex flex-row justify-between">
+                <div className="flex">
+                  <p className="text-xs text-gray-500">
+                    /u/{comment.user.username}
+                    {' - '}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    {formatDistanceToNow(new Date(comment.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+                {loggedUser.username === comment.user.username ? (
+                  <button
+                    onClick={async () => {
+                      await setCommentIdToDelete(comment.id);
+                      await deleteComment();
+                    }}
+                    className="text-[#FF0000]"
+                  >
+                    X
+                  </button>
+                ) : null}
+              </div>
               <p className="text-xs">{comment.body}</p>
-              <p className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(comment.createdAt), {
-                  addSuffix: true,
-                })}
-              </p>
-              <p className="text-xs text-gray-500">
-                by {comment.user.username}
-              </p>
-              {loggedUser.username === comment.user.username ? (
-                <button
-                  // onClick={}
-                  className="text-[#FF0000]"
-                >
-                  X
-                </button>
-              ) : null}
             </div>
           ))}
         </div>
@@ -44,16 +77,22 @@ export default function Comments({ loggedUser, comments }: CommentsProps) {
       return (
         <div>
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-gray-200 py-1">
+            <div key={comment.id} className="py-2 px-3">
+              <div className="flex flex-row justify-between">
+                <div className="flex">
+                  <p className="text-xs text-gray-500">
+                    /u/{comment.user.username}
+                    {' - '}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    {formatDistanceToNow(new Date(comment.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
               <p className="text-xs">{comment.body}</p>
-              <p className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(comment.createdAt), {
-                  addSuffix: true,
-                })}
-              </p>
-              <p className="text-xs text-gray-500">
-                by {comment.user.username}
-              </p>
             </div>
           ))}
         </div>

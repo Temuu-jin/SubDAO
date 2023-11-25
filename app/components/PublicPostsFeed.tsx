@@ -20,6 +20,7 @@ const getPublicPostsWithCommentsAndVotesQuery = gql`
         username
       }
       comments {
+        id
         body
         createdAt
         updatedAt
