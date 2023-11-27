@@ -5,8 +5,8 @@ export async function up(sql: Sql) {
     CREATE TABLE votes (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id),
-      post_id INTEGER REFERENCES posts(id),
-      comment_id INTEGER REFERENCES comments(id),
+      post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+      comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
       vote_type SMALLINT NOT NULL CHECK (vote_type IN (-1, 1)),
       created_at TIMESTAMP DEFAULT NOW(),
       CONSTRAINT chk_vote_type CHECK (

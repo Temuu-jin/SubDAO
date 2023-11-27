@@ -37,7 +37,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <div>
-          <div className="text-xl text-center p-2 h-10">subdApp</div>
+          <div className="text-xl text-center p-2 h-10">SubDAO</div>
           <div
             className={`grid xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-12 sm: ${inter.className}`}
           >

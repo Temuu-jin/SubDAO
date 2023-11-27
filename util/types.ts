@@ -2,6 +2,7 @@ export type User = {
   id: number;
   username: string;
   passwordHash: string;
+  image: string;
   email: string;
   createdAt: Date;
   bio: string;

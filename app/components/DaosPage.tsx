@@ -15,7 +15,9 @@ const getDaosQuery = gql`
 `;
 
 export default function DaosPage() {
-  const { data, loading, error } = useQuery(getDaosQuery);
+  const { data, loading, error } = useQuery(getDaosQuery, {
+    pollInterval: 500,
+  });
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   const daos = data.daos as [Dao];

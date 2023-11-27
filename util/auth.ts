@@ -18,6 +18,7 @@ export type GetUserResponse = {
   id: string;
   username: string;
   email: string;
+  image: string;
   createdAt: string;
   bio: string;
   postCount: number;
@@ -60,6 +61,7 @@ export const createSessionToken = async (user: User) => {
     username: user.username,
     email: user.email,
     createdAt: user.createdAt,
+    image: user.image,
     bio: user.bio,
     postCount: user.postCount,
     commentCount: user.commentCount,

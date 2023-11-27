@@ -6,6 +6,7 @@ export async function up(sql: Sql) {
     username varchar(40) NOT NULL UNIQUE,
     password_hash varchar(100) NOT NULL,
     email varchar(100) NOT NULL UNIQUE,
+    image varchar(255) DEFAULT 'subdao/profilePicTemplate',
     bio text DEFAULT '',
     created_at timestamp DEFAULT NOW(),
     post_count integer DEFAULT 0,

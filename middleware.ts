@@ -11,9 +11,7 @@ export async function middleware(req: NextRequest) {
     }));
 
   if (req.nextUrl.pathname.startsWith('/login') && verifiedToken) {
-    return NextResponse.redirect(
-      new URL(`/profile/${verifiedToken.id}`, req.url),
-    );
+    return NextResponse.redirect(new URL(`/`, req.url));
   }
   if (req.nextUrl.pathname.startsWith('/profile') && !verifiedToken) {
     return NextResponse.redirect(new URL('/login', req.url));

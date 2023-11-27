@@ -157,7 +157,7 @@ export default async function SingleDaoPage(props: SingleDaoPageProps) {
               {privateDaoPosts.map((post) => {
                 return (
                   <div key={`post-${post.id}`}>
-                    <PostInFeed post={post} />
+                    <PostInFeed post={post} loggedUser={loggedInUser} />
                   </div>
                 );
               })}
@@ -170,7 +170,7 @@ export default async function SingleDaoPage(props: SingleDaoPageProps) {
             {publicDaoPosts.map((post) => {
               return (
                 <div key={`post-${post.id}`}>
-                  <PostInFeed post={post} />
+                  <PostInFeed post={post} loggedUser={loggedInUser} />
                 </div>
               );
             })}

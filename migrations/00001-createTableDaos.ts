@@ -6,6 +6,7 @@ export async function up(sql: Sql) {
     name varchar(100) NOT NULL UNIQUE,
     description text NOT NULL,
     member_count integer DEFAULT 0,
+    image varchar(255) DEFAULT '',
     created_by integer REFERENCES users(id),
     created_at timestamp DEFAULT NOW(),
     updated_at timestamp DEFAULT NOW()

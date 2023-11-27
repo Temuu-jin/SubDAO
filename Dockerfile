@@ -1,6 +1,8 @@
 FROM node:lts-alpine AS builder
 ENV NODE_ENV production
 # Install necessary tools
+ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="djrghgy0j"
+
 RUN apk add --no-cache libc6-compat yq --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
