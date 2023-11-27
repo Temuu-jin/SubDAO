@@ -41,8 +41,8 @@ export default async function RootLayout({
           <div
             className={`grid xl:grid-cols-12 lg:grid-cols-12 md:grid-cols-12 sm: ${inter.className}`}
           >
-            <div className="xl:col-span-2 xl:block lg:col-span-1 lg:block md:hidden sm:hidden" />
-            <aside className="xl:col-span-1 lg:col-span-2 md:col-span-2 sm: text-right    p-2 ">
+            <div className="xl:col-span-1 xl:block lg:col-span-1 lg:block md:hidden sm:hidden" />
+            <aside className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm: text-right    p-2 ">
               <nav>
                 <div className="">
                   <div className="fixed flex flex-col text-left gap-10">

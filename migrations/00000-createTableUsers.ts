@@ -1,18 +1,21 @@
 import { Sql } from 'postgres';
 
 export async function up(sql: Sql) {
-  await sql`CREATE TABLE users(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    username varchar(40) NOT NULL UNIQUE,
-    password_hash varchar(100) NOT NULL,
-    email varchar(100) NOT NULL UNIQUE,
-    image varchar(255) DEFAULT 'subdao/profilePicTemplate',
-    bio text DEFAULT '',
-    created_at timestamp DEFAULT NOW(),
-    post_count integer DEFAULT 0,
-    comment_count integer DEFAULT 0,
-    user_subscriptions integer DEFAULT 0
-  );`;
+  await sql`
+    CREATE TABLE
+      users (
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        username VARCHAR(40) NOT NULL UNIQUE,
+        password_hash VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        image VARCHAR(255) DEFAULT 'subdao/profilePicTemplate',
+        bio TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT NOW(),
+        post_count INTEGER DEFAULT 0,
+        comment_count INTEGER DEFAULT 0,
+        user_subscriptions INTEGER DEFAULT 0
+      );
+  `;
 }
 
 export async function down(sql: Sql) {
